@@ -13,7 +13,7 @@ class PostsList extends React.Component {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     fetch(postsApiUrl)
       .then(res => res.json())
       .then(posts => { this.setState({posts: posts}) });
