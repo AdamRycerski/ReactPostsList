@@ -2,6 +2,12 @@ import React from "react";
 import PropTypes from "prop-types";
 
 class Logo extends React.Component {
+  static propTypes = {
+    src: PropTypes.string.isRequired,
+    width: PropTypes.number,
+    height: PropTypes.number
+  };
+
   render() {
     let { src, width, height } = this.props;
     return (
@@ -9,11 +15,5 @@ class Logo extends React.Component {
     );
   }
 }
-
-Logo.propTypes = {
-  src: PropTypes.string.isRequired,
-  width: PropTypes.number,
-  height: PropTypes.number
-};
 
 export default Logo;

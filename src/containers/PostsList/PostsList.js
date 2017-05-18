@@ -5,6 +5,22 @@ import Post from "../../components/Post/Post";
 import { postsApiUrl } from "../../config";
 
 class PostsList extends React.Component {
+  static propTypes = {
+    filter: PropTypes.objectOf(function(value, key) {
+      if (key === "phrase" && (typeof(value[key]) !== "string"))
+        return new Error("Invalid value for filter.phrase parameter");
+      if (key === "maxLength" && (typeof(value[key]) !== "number"))
+        return new Error("Invalid value for filter.maxLength parameter");
+    })
+  };
+
+  static defaultProps = {
+    filter: {
+      phrase: "",
+      maxLength: -1
+    }
+  };
+
   constructor() {
     super();
 
@@ -70,21 +86,5 @@ class PostsList extends React.Component {
     );
   }
 }
-
-PostsList.propTypes = {
-  filter: PropTypes.objectOf(function(value, key) {
-    if (key === "phrase" && (typeof(value[key]) !== "string"))
-      return new Error("Invalid value for filter.phrase parameter");
-    if (key === "maxLength" && (typeof(value[key]) !== "number"))
-      return new Error("Invalid value for filter.maxLength parameter");
-  })
-};
-
-PostsList.defaultProps = {
-  filter: {
-    phrase: "",
-    maxLength: -1
-  }
-};
 
 export default PostsList;

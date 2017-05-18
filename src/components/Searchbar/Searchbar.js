@@ -1,42 +1,46 @@
 import React from "react";
+import PropTypes from "prop-types";
+
+import utils from "../../utils.js";
 
 class Searchbar extends React.Component {
+  static propTypes = {
+    debounceTime: PropTypes.number
+  };
+
+  static defaultProps = {
+    debounceTime: 250
+  };
+
   constructor(props) {
-    super();
+    super(props);
 
     this.state = {
-      phrase: ""
+      phrase: "",
     };
+
+    this.__onSearchPhraseUpdate = utils.debounce(() => {
+      let phrase = this.state.phrase;
+      this.props.onSearchPhraseUpdate(phrase);
+    }, this.props.debounceTime);
   }
 
   __onInputChange(event) {
     this.setState({
       phrase: event.target.value
     });
-  }
 
-  __onFormSubmit(event) {
-    event.preventDefault();
-
-    this.props.onSearchPhraseUpdate(this.state.phrase);
-
-    this.setState({
-      phrase: ""
-    });
+    this.__onSearchPhraseUpdate();
   }
 
   render() {
     return (
       <div>
-        <form onSubmit={ (e) => { this.__onFormSubmit(e); } } className="form-inline">
-          <input
-            type="text"
-            value={ this.state.phrase }
-            onChange={ (e) => { this.__onInputChange(e); } }
-            className="form-control"
-          />
-          <input type="submit" className="btn btn-default"/>
-        </form>
+        <input
+          type="text"
+          value={ this.state.phrase }
+          onChange={ (e) => { this.__onInputChange(e); } }
+        />
       </div>
     );
   }

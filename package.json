@@ -3,11 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "classnames": "^2.2.5",
     "fetch-plus": "^3.10.6",
     "isomorphic-fetch": "^2.2.1",
     "prop-types": "^15.5.10",
     "react": "^15.5.4",
-    "react-dom": "^15.5.4"
+    "react-dom": "^15.5.4",
+    "react-router": "3.*"
   },
   "devDependencies": {
     "node-sass": "^4.5.2",

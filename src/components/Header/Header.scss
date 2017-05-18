@@ -1,9 +1,9 @@
-header {
+.Header {
   display: flex;
   align-items: center;
   height: 100px;
 }
 
-header * {
+.Header * {
   padding: 0.5em;
 }
