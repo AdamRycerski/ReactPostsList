@@ -18,7 +18,7 @@ class Breadcrumbs extends React.Component {
   }
 
   __getList() {
-    let items = this.__getListItemsButLast();
+    const items = this.__getListItemsButLast();
     items.push(this.__getLastListItem());
 
     return (

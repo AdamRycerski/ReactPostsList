@@ -1,29 +1,17 @@
 import React from 'react';
 import { Link }from 'react-router';
 
-import PropTypes from 'prop-types';
-
 import './PostDetail.scss';
 
 import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
 import Modal from '../../components/Modal/Modal';
+import CommentsList from '../CommentsList/CommentsList'
 
 import users from '../../usersMock';
 import { postsApi } from '../../PostsAPI';
 
 
 class PostDetail extends React.Component {
-  static defaultProps = {
-    isPostNew: false,
-    id: -1,
-    onDone: () => {},
-  }
-
-  static propTypes = {
-    isPostNew: PropTypes.bool,
-    onDone: PropTypes.func,
-  }
-
   constructor(props) {
     super(props);
 
@@ -34,7 +22,7 @@ class PostDetail extends React.Component {
         message: '',
       },
       post: {
-        id: this.props.id,
+        id: Number(this.props.params.id),
         title: '',
         body: '',
         authorId: -1,
@@ -43,7 +31,7 @@ class PostDetail extends React.Component {
   }
 
   componentDidMount() {
-    if (!this.state.isPostNew) {
+    if (this.__getPostProperty("id")) {
       this.__fetchPost();
     }
   }
@@ -99,13 +87,17 @@ class PostDetail extends React.Component {
 
     if (this.__getValidationError()) return false;
 
-    if (this.state.isPostNew) {
-      this.__addPost().then(console.log);
-    } else {
+    if (this.__getPostProperty("id")) {
       this.__updatePost().then(console.log);
+    } else {
+      this.__addPost().then(console.log);
     }
 
-    this.props.onDone();
+    this.__returnToHomepage();
+  }
+
+  __returnToHomepage() {
+    this.props.router.push("/");
   }
 
   __getValidationError() {
@@ -114,14 +106,14 @@ class PostDetail extends React.Component {
       this.__getPostProperty('body') === '' ||
       Number(this.__getPostProperty('authorId')) === -1
     ) {
-      let errorMessage = 'All fields must be filled out.';
+      const errorMessage = 'All fields must be filled out.';
       this.__displayValidationMessage(errorMessage);
       return errorMessage;
     }
   }
 
   __getUserSelectOptions(users) {
-    let options = users.map((user) => {
+    const options = users.map((user) => {
       return (
         <option value={ Number(user.id) } key={ user.id }>
           { user.name }
@@ -170,20 +162,20 @@ class PostDetail extends React.Component {
     });
   }
 
-  render() {
+  __getFormSection() {
+    const header = this.__getPostProperty("id") ? "Edit Post" : "Add Post";
     return (
-      <div className='PostDetail'>
-        <Breadcrumbs links={ this.__getBreadcrumbsLinks() } />
-        <h3>Edit/Insert Post</h3>
+      <div>
+        <h3>{ header }</h3>
         <div className='form-group'>
-          <form onSubmit={ (e) => { this.__onSubmit(e); } }>
+          <form onSubmit={ e => this.__onSubmit(e) }>
             <div className='form-group'>
               <input
                 type='text'
                 name='title'
                 className='form-control'
                 placeholder='Title'
-                onChange={ (e) => { this.__onInputChange(e); } }
+                onChange={ e => this.__onInputChange(e) }
                 value={ this.__getPostProperty('title') }
               />
             </div>
@@ -193,7 +185,7 @@ class PostDetail extends React.Component {
                 className='form-control'
                 placeholder='Body'
                 rows='5'
-                onChange={ (e) => { this.__onInputChange(e); } }
+                onChange={ e => this.__onInputChange(e) }
                 value={ this.__getPostProperty('body') }
               />
             </div>
@@ -203,7 +195,7 @@ class PostDetail extends React.Component {
                 name='authorId'
                 className='form-control'
                 id='author'
-                onChange={ (e) => { this.__onInputChange(e); } }
+                onChange={ e => this.__onInputChange(e) }
                 value={ this.__getPostProperty('authorId') }
               >
                 { this.__getUserSelectOptions(users) }
@@ -213,15 +205,46 @@ class PostDetail extends React.Component {
             <button type='submit' className='btn btn-default'>Save</button>
           </form>
         </div>
-        <Modal isDisplayed={ this.state.validation.isMessageDisplayed }>
-          <p>{ this.state.validation.message }</p>
-          <button
-            className='btn btn-default'
-            onClick={ (e) => { this.__hideValidationMessage(); } }
-          >
-            ok
-          </button>
-        </Modal>
+      </div>
+    );
+  }
+
+  __getCommentsSection() {
+    if (!this.__getPostProperty("id")) return;
+
+    return (
+      <div>
+        <h3>Comments</h3>
+        <div className="small">
+          <CommentsList postId={ this.__getPostProperty("id") } />
+        </div>
+      </div>
+    );
+  }
+
+  __getBreadcrumbs() {
+    return ( <Breadcrumbs links={ this.__getBreadcrumbsLinks() } /> );
+  }
+
+  __getModal() {
+    return (
+      <Modal
+        isDisplayed={ this.state.validation.isMessageDisplayed }
+        buttons={ [ { label: "ok", callback: e => this.__hideValidationMessage() } ] }
+        header={ "Validation error" }
+      >
+        { this.state.validation.message }
+      </Modal>
+    );
+  }
+
+  render() {
+    return (
+      <div className='PostDetail'>
+        { this.__getBreadcrumbs() }
+        { this.__getFormSection() }
+        { this.__getCommentsSection() }
+        { this.__getModal() }
       </div>
     );
   }

@@ -8,22 +8,37 @@ import './Modal.scss';
 class Modal extends React.Component {
   static defaultProps = {
     isDisplayed: false,
+    header: "",
+    buttons: [],
   }
 
   static propTypes = {
     isDisplayed: PropTypes.bool,
-    footer: PropTypes.element,
-    header: PropTypes.element,
+    header: PropTypes.string,
+    buttons: PropTypes.arrayOf(PropTypes.shape({
+      label: PropTypes.string.isRequired,
+      callback: PropTypes.func.isRequired,
+    })),
   }
 
   __getFooter() {
-    if (this.props.footer) {
-      return (
-        <div className='modal-footer'>{ this.props.footer }</div>
-      );
-    } else {
-      return '';
-    }
+    return (
+      <div className="modal-footer">
+        { this.props.buttons.map(button => this.__getButton(button)) }
+      </div>
+    );
+  }
+
+  __getButton(button) {
+    return (
+      <button
+        key={ button.label }
+        className='btn btn-default'
+        onClick={ button.callback }
+      >
+        { button.label }
+      </button>
+    );
   }
 
   __getHeader() {
@@ -49,7 +64,7 @@ class Modal extends React.Component {
       <div className={ classNames('Modal', { displayed: this.props.isDisplayed }) }>
         <div
           className={ classNames('ModalOverlay') }
-          onClick={ (e) => { e.preventDefault(); }}
+          onClick={ e => e.preventDefault() }
         />
         <div className={ classNames('ModalWindow modal-content') }>
           { this.__getHeader() }

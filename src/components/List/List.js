@@ -17,7 +17,7 @@ class List extends React.Component {
   }
 
   __getItemsListJSX() {
-    let listElements = this.props.items.map(item => this.__getListElement(item));
+    const listElements = this.props.items.map(item => this.__getListElement(item));
 
     return (
       <ul className='list-group'>

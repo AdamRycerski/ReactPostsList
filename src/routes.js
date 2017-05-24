@@ -3,13 +3,13 @@ import { Route, IndexRoute } from "react-router";
 
 import App from "./containers/App/App";
 import PostsIndex from "./containers/PostsIndex/PostsIndex";
-import PostShow from "./containers/PostShow/PostShow";
+import PostDetail from "./containers/PostDetail/PostDetail";
 
 const routes = (
   <Route path="/" component={ App }>
     <IndexRoute component={ PostsIndex } />
-    <Route path="posts/:id" component={ PostShow } />
-    <Route path="posts/add" omponent={ PostShow } />
+    <Route path="posts/:id" component={ PostDetail } />
+    <Route path="posts/add" component={ PostDetail } />
   </Route>
 );
 

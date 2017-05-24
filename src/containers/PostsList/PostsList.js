@@ -5,7 +5,7 @@ import './PostsList.scss';
 
 import Post from '../../components/Post/Post';
 import List from '../../components/List/List';
-import ConfirmationModal from '../../components/ConfirmationModal/ConfirmationModal';
+import Modal from '../../components/Modal/Modal';
 
 import { postsApi } from '../../PostsAPI';
 
@@ -42,7 +42,7 @@ class PostsList extends React.Component {
   }
 
   __filter(posts) {
-    let { phrase, maxLength } = this.props.filter;
+    const { phrase, maxLength } = this.props.filter;
 
     let filteredPosts = this.__filterPostsByPhrase(posts, phrase);
     if (maxLength >= 0) {
@@ -63,7 +63,7 @@ class PostsList extends React.Component {
 
   __fetchPosts() {
     return postsApi.fetchPosts()
-      .then((posts) => { this.setState({ posts }) });
+      .then( posts => this.setState({ posts }) );
   }
 
   __getPosts(posts) {
@@ -75,7 +75,7 @@ class PostsList extends React.Component {
             id={ post.id }
             title={ post.title }
             body={ post.body }
-            onDelete={ (id) => { this.__onPostDeleteClick(id); } }
+            onDelete={ id => this.__onPostDeleteClick(id) }
           />
         ),
       };
@@ -83,6 +83,14 @@ class PostsList extends React.Component {
   }
 
   __deletePost(id) {
+    const posts = this.state.posts.filter((post) => {
+      return post.id !== id;
+    });
+
+    this.setState({
+      posts,
+    });
+
     postsApi.deletePost(id);
   }
 
@@ -115,17 +123,24 @@ class PostsList extends React.Component {
     });
   }
 
+  __getModalButtons() {
+    return [
+      { label: "Cancel", callback: () => this.__hideDeleteModal() },
+      { label: "Confirm", callback: () => this.__onDeleteModalAccept() },
+    ];
+  }
+
   render() {
     return (
       <div>
-        <List items={ this.__getPosts(this.__filter(this.state.posts)) } />
-        <ConfirmationModal
+        <List items={ this.__getPosts(this.__filter([ ...this.state.posts ])) } />
+        <Modal
           isDisplayed={ this.state.deleteModal.isDisplayed }
-          onAccept={ () => { this.__onDeleteModalAccept(); } }
-          onCancel={ () => { this.__hideDeleteModal(); } }
+          header="Confirm"
+          buttons={ this.__getModalButtons() }
         >
           Are you sure you want to delete this post?
-        </ConfirmationModal>
+        </Modal>
       </div>
     )
   }

@@ -7,7 +7,6 @@ import './Post.scss';
 
 class Post extends React.Component {
   static defaultProps = {
-    onDelete: (id) => {},
     title: '',
     body: '',
   }
@@ -28,7 +27,7 @@ class Post extends React.Component {
   }
 
   __onDelete() {
-    this.props.onDelete(this.state.id);
+    this.props.onDelete && this.props.onDelete(this.state.id);
   }
 
   render() {
@@ -42,7 +41,7 @@ class Post extends React.Component {
           <Link to={ `/posts/${this.state.id}` } className='btn btn-default'>Edit</Link>
           <button
             className='btn btn-default'
-            onClick={ (e) => { this.__onDelete(); } }
+            onClick={ e => this.__onDelete() }
           >
             Delete
           </button>

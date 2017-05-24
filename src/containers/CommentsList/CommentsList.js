@@ -11,6 +11,7 @@ class CommentsList extends React.Component {
   static defaultProps = {
     postId: -1,
   }
+  
   constructor(props) {
     super(props);
 
@@ -26,7 +27,7 @@ class CommentsList extends React.Component {
 
   __fetchComments() {
     return postsApi.fetchComments(this.state.postId)
-      .then((comments) => { this.setState({ comments }); });
+      .then(comments => this.setState({ comments }));
   }
 
   __getComments(comments) {
@@ -34,14 +35,14 @@ class CommentsList extends React.Component {
       return {
         key: comment.id,
         jsx: <Comment title={ comment.name } body={ comment.body } email={ comment.email} />,
-      }
-    })
+      };
+    });
   }
 
   render() {
     return (
       <List
-        items={ this.__getComments(this.state.comments) }
+        items={ this.__getComments([ ...this.state.comments ]) }
       />
     );
   }

@@ -8,12 +8,12 @@ import utils from '../../utils.js';
 
 class Searchbar extends React.Component {
   static propTypes = {
-    debounceTime: PropTypes.number
+    debounceTime: PropTypes.number,
+    onSearchPhraseUpdate: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
     debounceTime: 250,
-    onSearchPhraseUpdate: () => {},
   };
 
   constructor(props) {
@@ -24,7 +24,7 @@ class Searchbar extends React.Component {
     };
 
     this.__onSearchPhraseUpdate = utils.debounce(() => {
-      let phrase = this.state.phrase;
+      const phrase = this.state.phrase;
       this.props.onSearchPhraseUpdate(phrase);
     }, this.props.debounceTime);
   }
@@ -43,7 +43,7 @@ class Searchbar extends React.Component {
         <input
           type='text'
           value={ this.state.phrase }
-          onChange={ (e) => { this.__onInputChange(e); } }
+          onChange={ e => this.__onInputChange(e) }
           placeholder='Search'
         />
       </div>

@@ -37,7 +37,7 @@ class PostsIndex extends React.Component {
     return (
       <div className='PostsIndex'>
         <div className='Controls'>
-          <Searchbar onSearchPhraseUpdate={ (phrase) => { this.__filterListByPhrase(phrase); } } />
+          <Searchbar onSearchPhraseUpdate={ phrase => this.__filterListByPhrase(phrase) } />
           <Link to='/posts/add' className='btn btn-default'>Add Post</Link>
         </div>
         <PostsList filter={ this.state.listFilter } />
