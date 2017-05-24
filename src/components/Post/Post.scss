@@ -1,0 +1,15 @@
+.Post .Controls {
+  margin-bottom: 0;
+}
+
+.Post .Controls:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+.Post .Controls .btn {
+  width: 5em;
+  float: right;
+  margin-left: 0.5em;
+}

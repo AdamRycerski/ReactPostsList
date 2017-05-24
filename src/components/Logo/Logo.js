@@ -1,6 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 
+import "./Logo.scss";
+
 class Logo extends React.Component {
   static propTypes = {
     src: PropTypes.string.isRequired,
@@ -11,7 +13,9 @@ class Logo extends React.Component {
   render() {
     let { src, width, height } = this.props;
     return (
-      <img src={ src } width={ width } height={ height } alt="logo" />
+      <div className="Logo">
+        <img src={ src } width={ width } height={ height } alt="logo" />
+      </div>
     );
   }
 }

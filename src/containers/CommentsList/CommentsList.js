@@ -1,22 +1,42 @@
 import React from "react";
 
 import Comment from "../../components/Comment/Comment";
-import FetchingList from "../FetchingList/FetchingList";
+import List from "../List/List";
 
-import { postsApiUrl } from "../../config";
+import { postsApi } from "../../PostsAPI";
 
 class CommentsList extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      postId: this.props.postId,
+      comments: [],
+    }
+  }
+
+  componentDidMount() {
+    this.__fetchComments();
+  }
+
+  __fetchComments() {
+    return postsApi.fetchComments(this.state.postId)
+      .then((comments) => { this.setState({ comments }); });
+  }
+
+  __getComments(comments) {
+    return comments.map((comment) => {
+      return {
+        key: comment.id,
+        jsx: <Comment title={ comment.name } body={ comment.body } email={ comment.email} />,
+      }
+    })
+  }
+
   render() {
     return (
-      <FetchingList
-        fetchUrl={ `${postsApiUrl}/${this.props.postId}/comments` }
-        listElement={ Comment }
-        schema={{
-          key: "id",
-          title: "name",
-          body: "body",
-          email: "email",
-        }}
+      <List
+        items={ this.__getComments(this.state.comments) }
       />
     );
   }

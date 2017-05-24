@@ -9,7 +9,8 @@ class Searchbar extends React.Component {
   };
 
   static defaultProps = {
-    debounceTime: 250
+    debounceTime: 250,
+    onSearchPhraseUpdate: () => {},
   };
 
   constructor(props) {
@@ -35,11 +36,12 @@ class Searchbar extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className="SearchBar">
         <input
           type="text"
           value={ this.state.phrase }
           onChange={ (e) => { this.__onInputChange(e); } }
+          placeholder="Search"
         />
       </div>
     );

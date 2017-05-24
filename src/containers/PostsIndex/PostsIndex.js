@@ -1,9 +1,13 @@
 import React from "react";
+import { Link } from "react-router";
+
+import "./PostsIndex.scss";
 
 import Searchbar from "../../components/Searchbar/Searchbar";
 import PostsList from "../PostsList/PostsList";
 
-class PostsListPage extends React.Component {
+
+class PostsIndex extends React.Component {
   constructor() {
     super();
 
@@ -11,7 +15,7 @@ class PostsListPage extends React.Component {
       listFilter: {
         phrase: "",
         maxLength: 5
-      }
+      },
     }
   }
 
@@ -23,14 +27,23 @@ class PostsListPage extends React.Component {
     });
   }
 
+  __displayDeletePostConfirmation() {
+    this.setState({
+      isDeleteConfirmationDisplayed: true,
+    });
+  }
+
   render() {
     return (
-      <div>
-        <Searchbar onSearchPhraseUpdate={ (phrase) => { this.__filterListByPhrase(phrase); } } />
+      <div className="PostsIndex">
+        <div className="Controls">
+          <Searchbar onSearchPhraseUpdate={ (phrase) => { this.__filterListByPhrase(phrase); } } />
+          <Link to="/posts/add" className="btn btn-default">Add Post</Link>
+        </div>
         <PostsList filter={ this.state.listFilter } />
       </div>
     );
   }
 }
 
-export default PostsListPage;
+export default PostsIndex;

@@ -1,46 +1,73 @@
 import React from "react";
+import { Link }from "react-router";
 
-import CommentsList from "../CommentsList/CommentsList";
+import "./PostDetail.scss";
 
-import { postsApiUrl } from "../../config";
+import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
+import Modal from "../../components/Modal/Modal";
+
 import users from "../../usersMock";
+import { postsApi } from "../../PostsAPI";
+
 
 class PostDetail extends React.Component {
+  static defaultProps = {
+    isPostNew: false,
+    id: -1,
+    onDone: () => {},
+  }
+
   constructor(props) {
     super(props);
 
     this.state = {
+      isPostNew: this.props.isPostNew,
+      validation: {
+        isMessageDisplayed: false,
+        message: "",
+      },
       post: {
-        id: Number(this.props.params.id),
+        id: this.props.id,
         title: "",
         body: "",
-        authorId: 0,
+        authorId: -1,
       },
     };
   }
 
   componentDidMount() {
-    this.__pullPostData();
+    if (!this.state.isPostNew) {
+      this.__fetchPost();
+    }
   }
 
-  __pullPostData() {
-    this.__fetchPost(this.state.post.id)
+  __fetchPost() {
+    postsApi.fetchPost(this.__getPostProperty("id"))
       .then(post => {
         this.__changePostProperties({
           title: post.title,
           body: post.body,
           authorId: post.userId,
         });
-      });
+      })
+      .catch(console.log);
   }
 
-  __fetchPost(id) {
-    return fetch(this.__getPostUrl(id))
-      .then(res => res.json());
+  __updatePost() {
+    return postsApi.updatePost(this.__getPostProperty("id"), this.__getPostData());
   }
 
-  __getPostUrl(id) {
-    return `${postsApiUrl}/${id}`;
+  __addPost() {
+    return postsApi.addPost(this.__getPostData());
+  }
+
+  __getPostData() {
+    return {
+      title: this.__getPostProperty("title"),
+      body: this.__getPostProperty("body"),
+      authorId: this.__getPostProperty("authorId"),
+      id: this.__getPostProperty("id"),
+    }
   }
 
   __changePostProperties(props) {
@@ -62,23 +89,86 @@ class PostDetail extends React.Component {
 
   __onSubmit(event) {
     event.preventDefault();
+
+    if (this.__getValidationError()) return false;
+
+    if (this.state.isPostNew) {
+      this.__addPost().then(console.log);
+    } else {
+      this.__updatePost().then(console.log);
+    }
+
+    this.props.onDone();
+  }
+
+  __getValidationError() {
+    if (
+      this.__getPostProperty("title") === "" ||
+      this.__getPostProperty("body") === "" ||
+      Number(this.__getPostProperty("authorId")) === -1
+    ) {
+      let errorMessage = "All fields must be filled out.";
+      this.__displayValidationMessage(errorMessage);
+      return errorMessage;
+    }
   }
 
   __getUserSelectOptions(users) {
-    return users.map((user) => {
+    let options = users.map((user) => {
       return (
         <option value={ Number(user.id) } key={ user.id }>
           { user.name }
         </option>
       );
     });
+    options.unshift(this.__getDefaultUserSelectOption());
+    return options;
+  }
+
+  __getDefaultUserSelectOption() {
+    return (
+      <option value={ -1 } key={ -1 }>
+        --- select author ---
+      </option>
+    );
+  }
+
+  __getBreadcrumbsLinks() {
+    return [
+      { name: "Home", path: "/" },
+      {
+        name: this.__getPostProperty("title") || "New post",
+        path: `/posts/${this.__getPostProperty("id")}`
+      },
+    ];
+  }
+
+  __hideValidationMessage() {
+    this.setState({
+      validation: {
+        ...this.state.validation,
+        message: "",
+        isMessageDisplayed: false,
+      },
+    });
+  }
+
+  __displayValidationMessage(message) {
+    this.setState({
+      validation: {
+        ...this.state.validation,
+        message,
+        isMessageDisplayed: true,
+      },
+    });
   }
 
   render() {
     return (
-      <div>
+      <div className="PostDetail">
+        <Breadcrumbs links={ this.__getBreadcrumbsLinks() } />
+        <h3>Edit/Insert Post</h3>
         <div className="form-group">
-          <h3>Edit/Insert post</h3>
           <form onSubmit={ (e) => { this.__onSubmit(e); } }>
             <div className="form-group">
               <input
@@ -112,14 +202,19 @@ class PostDetail extends React.Component {
                 { this.__getUserSelectOptions(users) }
               </select>
             </div>
-            <button type="submit" className="btn btn-default">Save changes</button>
-            <button className="btn btn-default">Cancel</button>
+            <Link to="/" className="btn btn-default">Cancel</Link>
+            <button type="submit" className="btn btn-default">Save</button>
           </form>
         </div>
-        <h4>Comments</h4>
-        <div className="small">
-          <CommentsList postId={ this.__getPostProperty("id") } />
-        </div>
+        <Modal isDisplayed={ this.state.validation.isMessageDisplayed }>
+          <p>{ this.state.validation.message }</p>
+          <button
+            className="btn btn-default"
+            onClick={ (e) => { this.__hideValidationMessage(); } }
+          >
+            ok
+          </button>
+        </Modal>
       </div>
     );
   }

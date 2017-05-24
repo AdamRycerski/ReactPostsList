@@ -1,9 +1,32 @@
 .Header {
-  display: flex;
-  align-items: center;
-  height: 100px;
+  height: 5em;
 }
 
-.Header * {
-  padding: 0.5em;
+.Header:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+.Header .Title {
+  float: left;
+  height: 100%;
+  margin : 0;
+  padding: 0;
+  position: relative;
+}
+
+.Header .Title > h1 {
+  width: 8em;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0;
+  margin: 0;
+}
+
+.Header .Logo {
+  height: 100%;
+  float: left;
+  margin-right: 1em;
 }

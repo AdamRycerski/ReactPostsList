@@ -1,0 +1,21 @@
+.PostsIndex .Controls {
+  margin-bottom: 1em;
+}
+
+.PostsIndex .Controls:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+.PostsIndex .Controls .SearchBar {
+  float: left;
+}
+
+.PostsIndex .Controls .btn {
+  float: right;
+}
+
+.PostsIndex .Controls .btn {
+  width: 7em;
+}
