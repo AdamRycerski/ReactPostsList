@@ -1,13 +1,19 @@
-.PostDetail .btn {
-  width: 7em;
-  margin-right: 1em;
-}
+.PostDetail {
 
-.PostDetail .ModalWindow {
-  padding: 3em;
-  text-align: center;
-}
+  .btn {
+    width: 7em;
+    margin-right: 1em;
+  }
 
-.PostDetail .ModalWindow .btn {
-  margin-top: 1em;
+  .ModalWindow {
+    padding: 1em;
+    text-align: center;
+
+
+    .btn {
+      margin-top: 1em;
+    }
+
+  }
+
 }

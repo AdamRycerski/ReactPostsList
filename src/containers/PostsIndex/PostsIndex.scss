@@ -1,21 +1,24 @@
-.PostsIndex .Controls {
-  margin-bottom: 1em;
-}
+.PostsIndex {
 
-.PostsIndex .Controls:after {
-  content: "";
-  display: block;
-  clear: both;
-}
+  .Controls {
 
-.PostsIndex .Controls .SearchBar {
-  float: left;
-}
+    margin-bottom: 1em;
 
-.PostsIndex .Controls .btn {
-  float: right;
-}
+    .SearchBar {
+      float: left;
+    }
 
-.PostsIndex .Controls .btn {
-  width: 7em;
+    .btn {
+      float: right;
+      width: 7em;
+    }
+
+  }
+
+  .Controls:after {
+    content: "";
+    display: block;
+    clear: both;
+  }
+
 }

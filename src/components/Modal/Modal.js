@@ -19,26 +19,26 @@ class Modal extends React.Component {
   __getFooter() {
     if (this.props.footer) {
       return (
-        <div className="modal-footer">{ this.props.footer }</div>
+        <div className='modal-footer'>{ this.props.footer }</div>
       );
     } else {
-      return "";
+      return '';
     }
   }
 
   __getHeader() {
     if (this.props.header) {
       return (
-        <div className="modal-header">{ this.props.header }</div>
+        <div className='modal-header'>{ this.props.header }</div>
       );
     } else {
-      return "";
+      return '';
     }
   }
 
   __getBody() {
     return (
-      <div className="modal-body">
+      <div className='modal-body'>
         { this.props.children }
       </div>
     );
