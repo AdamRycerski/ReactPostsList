@@ -1,13 +1,15 @@
-import React from "react";
-import { Link }from "react-router";
+import React from 'react';
+import { Link }from 'react-router';
 
-import "./PostDetail.scss";
+import PropTypes from 'prop-types';
 
-import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
-import Modal from "../../components/Modal/Modal";
+import './PostDetail.scss';
 
-import users from "../../usersMock";
-import { postsApi } from "../../PostsAPI";
+import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
+import Modal from '../../components/Modal/Modal';
+
+import users from '../../usersMock';
+import { postsApi } from '../../PostsAPI';
 
 
 class PostDetail extends React.Component {
@@ -17,6 +19,11 @@ class PostDetail extends React.Component {
     onDone: () => {},
   }
 
+  static propTypes = {
+    isPostNew: PropTypes.bool,
+    onDone: PropTypes.func,
+  }
+
   constructor(props) {
     super(props);
 
@@ -24,12 +31,12 @@ class PostDetail extends React.Component {
       isPostNew: this.props.isPostNew,
       validation: {
         isMessageDisplayed: false,
-        message: "",
+        message: '',
       },
       post: {
         id: this.props.id,
-        title: "",
-        body: "",
+        title: '',
+        body: '',
         authorId: -1,
       },
     };
@@ -42,7 +49,7 @@ class PostDetail extends React.Component {
   }
 
   __fetchPost() {
-    postsApi.fetchPost(this.__getPostProperty("id"))
+    postsApi.fetchPost(this.__getPostProperty('id'))
       .then(post => {
         this.__changePostProperties({
           title: post.title,
@@ -54,7 +61,7 @@ class PostDetail extends React.Component {
   }
 
   __updatePost() {
-    return postsApi.updatePost(this.__getPostProperty("id"), this.__getPostData());
+    return postsApi.updatePost(this.__getPostProperty('id'), this.__getPostData());
   }
 
   __addPost() {
@@ -63,10 +70,10 @@ class PostDetail extends React.Component {
 
   __getPostData() {
     return {
-      title: this.__getPostProperty("title"),
-      body: this.__getPostProperty("body"),
-      authorId: this.__getPostProperty("authorId"),
-      id: this.__getPostProperty("id"),
+      title: this.__getPostProperty('title'),
+      body: this.__getPostProperty('body'),
+      authorId: this.__getPostProperty('authorId'),
+      id: this.__getPostProperty('id'),
     }
   }
 
@@ -103,11 +110,11 @@ class PostDetail extends React.Component {
 
   __getValidationError() {
     if (
-      this.__getPostProperty("title") === "" ||
-      this.__getPostProperty("body") === "" ||
-      Number(this.__getPostProperty("authorId")) === -1
+      this.__getPostProperty('title') === '' ||
+      this.__getPostProperty('body') === '' ||
+      Number(this.__getPostProperty('authorId')) === -1
     ) {
-      let errorMessage = "All fields must be filled out.";
+      let errorMessage = 'All fields must be filled out.';
       this.__displayValidationMessage(errorMessage);
       return errorMessage;
     }
@@ -135,10 +142,10 @@ class PostDetail extends React.Component {
 
   __getBreadcrumbsLinks() {
     return [
-      { name: "Home", path: "/" },
+      { name: 'Home', path: '/' },
       {
-        name: this.__getPostProperty("title") || "New post",
-        path: `/posts/${this.__getPostProperty("id")}`
+        name: this.__getPostProperty('title') || 'New post',
+        path: `/posts/${this.__getPostProperty('id')}`
       },
     ];
   }
@@ -147,7 +154,7 @@ class PostDetail extends React.Component {
     this.setState({
       validation: {
         ...this.state.validation,
-        message: "",
+        message: '',
         isMessageDisplayed: false,
       },
     });
@@ -165,51 +172,51 @@ class PostDetail extends React.Component {
 
   render() {
     return (
-      <div className="PostDetail">
+      <div className='PostDetail'>
         <Breadcrumbs links={ this.__getBreadcrumbsLinks() } />
         <h3>Edit/Insert Post</h3>
-        <div className="form-group">
+        <div className='form-group'>
           <form onSubmit={ (e) => { this.__onSubmit(e); } }>
-            <div className="form-group">
+            <div className='form-group'>
               <input
-                type="text"
-                name="title"
-                className="form-control"
-                placeholder="Title"
+                type='text'
+                name='title'
+                className='form-control'
+                placeholder='Title'
                 onChange={ (e) => { this.__onInputChange(e); } }
-                value={ this.__getPostProperty("title") }
+                value={ this.__getPostProperty('title') }
               />
             </div>
-            <div className="form-group">
+            <div className='form-group'>
               <textarea
-                name="body"
-                className="form-control"
-                placeholder="Body"
-                rows="5"
+                name='body'
+                className='form-control'
+                placeholder='Body'
+                rows='5'
                 onChange={ (e) => { this.__onInputChange(e); } }
-                value={ this.__getPostProperty("body") }
+                value={ this.__getPostProperty('body') }
               />
             </div>
-            <div className="form-group">
-              <label htmlFor="author">Specify post author:</label>
+            <div className='form-group'>
+              <label htmlFor='author'>Specify post author:</label>
               <select
-                name="authorId"
-                className="form-control"
-                id="author"
+                name='authorId'
+                className='form-control'
+                id='author'
                 onChange={ (e) => { this.__onInputChange(e); } }
-                value={ this.__getPostProperty("authorId") }
+                value={ this.__getPostProperty('authorId') }
               >
                 { this.__getUserSelectOptions(users) }
               </select>
             </div>
-            <Link to="/" className="btn btn-default">Cancel</Link>
-            <button type="submit" className="btn btn-default">Save</button>
+            <Link to='/' className='btn btn-default'>Cancel</Link>
+            <button type='submit' className='btn btn-default'>Save</button>
           </form>
         </div>
         <Modal isDisplayed={ this.state.validation.isMessageDisplayed }>
           <p>{ this.state.validation.message }</p>
           <button
-            className="btn btn-default"
+            className='btn btn-default'
             onClick={ (e) => { this.__hideValidationMessage(); } }
           >
             ok

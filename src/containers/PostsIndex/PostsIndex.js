@@ -1,10 +1,10 @@
-import React from "react";
-import { Link } from "react-router";
+import React from 'react';
+import { Link } from 'react-router';
 
-import "./PostsIndex.scss";
+import './PostsIndex.scss';
 
-import Searchbar from "../../components/Searchbar/Searchbar";
-import PostsList from "../PostsList/PostsList";
+import Searchbar from '../../components/Searchbar/Searchbar';
+import PostsList from '../PostsList/PostsList';
 
 
 class PostsIndex extends React.Component {
@@ -13,7 +13,7 @@ class PostsIndex extends React.Component {
 
     this.state = {
       listFilter: {
-        phrase: "",
+        phrase: '',
         maxLength: 5
       },
     }
@@ -35,10 +35,10 @@ class PostsIndex extends React.Component {
 
   render() {
     return (
-      <div className="PostsIndex">
-        <div className="Controls">
+      <div className='PostsIndex'>
+        <div className='Controls'>
           <Searchbar onSearchPhraseUpdate={ (phrase) => { this.__filterListByPhrase(phrase); } } />
-          <Link to="/posts/add" className="btn btn-default">Add Post</Link>
+          <Link to='/posts/add' className='btn btn-default'>Add Post</Link>
         </div>
         <PostsList filter={ this.state.listFilter } />
       </div>

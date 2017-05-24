@@ -1,5 +1,7 @@
 import React from "react";
 
+import "./PostShow.scss";
+
 import PostDetail from "../PostDetail/PostDetail";
 import CommentsList from "../CommentsList/CommentsList";
 

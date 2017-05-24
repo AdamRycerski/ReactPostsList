@@ -1,13 +1,28 @@
-import React from "react";
-import { IndexLink } from "react-router";
+import React from 'react';
+import { IndexLink } from 'react-router';
+
+import PropTypes from 'prop-types';
+
+import './Breadcrumbs.scss';
 
 class Breadcrumbs extends React.Component {
+  static defaultProps = {
+    links: [],
+  }
+
+  static propTypes = {
+    links: PropTypes.arrayOf(PropTypes.shape({
+      path: PropTypes.string,
+      name: PropTypes.string,
+    })),
+  }
+
   __getList() {
     let items = this.__getListItemsButLast();
     items.push(this.__getLastListItem());
 
     return (
-      <ol className="breadcrumb">
+      <ol className='breadcrumb'>
         { items }
       </ol>
     );
@@ -18,7 +33,7 @@ class Breadcrumbs extends React.Component {
 
     return links.slice(0, links.length-1).map((link) => {
       return (
-        <li key={ link.path } className="breadcrumb-item">
+        <li key={ link.path } className='breadcrumb-item'>
           <IndexLink
             to={ link.path }
           >
@@ -32,9 +47,10 @@ class Breadcrumbs extends React.Component {
   __getLastListItem() {
     const links = this.props.links;
     const link = links[links.length-1];
+    if (!link) return;
 
     return (
-      <li key={ link.path } className="breadcrumb-item active">
+      <li key={ link.path } className='breadcrumb-item active'>
         { link.name}
       </li>
     );
@@ -42,7 +58,7 @@ class Breadcrumbs extends React.Component {
 
   render() {
     return (
-      <div className="Breadcrumbs">
+      <div className='Breadcrumbs'>
         { this.__getList() }
       </div>
     );

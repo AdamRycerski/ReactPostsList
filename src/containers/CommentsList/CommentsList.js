@@ -1,11 +1,16 @@
-import React from "react";
+import React from 'react';
 
-import Comment from "../../components/Comment/Comment";
-import List from "../List/List";
+import './CommentsList.scss';
 
-import { postsApi } from "../../PostsAPI";
+import Comment from '../../components/Comment/Comment';
+import List from '../../components/List/List';
+
+import { postsApi } from '../../PostsAPI';
 
 class CommentsList extends React.Component {
+  static defaultProps = {
+    postId: -1,
+  }
   constructor(props) {
     super(props);
 

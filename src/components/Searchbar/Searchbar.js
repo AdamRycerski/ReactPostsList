@@ -1,7 +1,10 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React from 'react';
 
-import utils from "../../utils.js";
+import PropTypes from 'prop-types';
+
+import './Searchbar.scss';
+
+import utils from '../../utils.js';
 
 class Searchbar extends React.Component {
   static propTypes = {
@@ -17,7 +20,7 @@ class Searchbar extends React.Component {
     super(props);
 
     this.state = {
-      phrase: "",
+      phrase: '',
     };
 
     this.__onSearchPhraseUpdate = utils.debounce(() => {
@@ -36,12 +39,12 @@ class Searchbar extends React.Component {
 
   render() {
     return (
-      <div className="SearchBar">
+      <div className='SearchBar'>
         <input
-          type="text"
+          type='text'
           value={ this.state.phrase }
           onChange={ (e) => { this.__onInputChange(e); } }
-          placeholder="Search"
+          placeholder='Search'
         />
       </div>
     );

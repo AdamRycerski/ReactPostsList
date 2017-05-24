@@ -1,25 +1,25 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React from 'react';
+import PropTypes from 'prop-types';
 
-import Post from "../../components/Post/Post";
-import List from "../List/List";
-import ConfirmationModal from "../../components/ConfirmationModal/ConfirmationModal";
+import './PostsList.scss';
 
-import { postsApi } from "../../PostsAPI";
+import Post from '../../components/Post/Post';
+import List from '../../components/List/List';
+import ConfirmationModal from '../../components/ConfirmationModal/ConfirmationModal';
+
+import { postsApi } from '../../PostsAPI';
 
 class PostsList extends React.Component {
   static propTypes = {
-    filter: PropTypes.objectOf(function(value, key) {
-      if (key === "phrase" && (typeof(value[key]) !== "string"))
-        return new Error("Invalid value for filter.phrase parameter");
-      if (key === "maxLength" && (typeof(value[key]) !== "number"))
-        return new Error("Invalid value for filter.maxLength parameter");
-    })
+    filter: PropTypes.shape({
+      phrase: PropTypes.string,
+      maxLength: PropTypes.number,
+    }),
   };
 
   static defaultProps = {
     filter: {
-      phrase: "",
+      phrase: '',
       maxLength: -1,
       isDeleteConfirmationDisplayed: true,
     },
