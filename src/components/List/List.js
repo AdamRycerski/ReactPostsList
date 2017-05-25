@@ -12,7 +12,7 @@ class List extends React.Component {
   static propTypes = {
     items: PropTypes.arrayOf(PropTypes.shape({
       key: PropTypes.any.isRequired,
-      jsx: PropTypes.element.isRequired,
+      element: PropTypes.element.isRequired,
     })),
   }
 
@@ -29,7 +29,7 @@ class List extends React.Component {
   __getListElement(item) {
     return (
       <li key={ item.key } className='ListItem list-group-item'>
-        { item.jsx }
+        { item.element }
       </li>
     );
   }

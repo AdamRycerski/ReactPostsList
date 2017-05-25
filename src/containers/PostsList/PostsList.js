@@ -33,6 +33,8 @@ class PostsList extends React.Component {
       deleteModal: {
         isDisplayed: false,
         postId: 0,
+        message: "",
+        header: "",
       },
     };
   }
@@ -70,7 +72,7 @@ class PostsList extends React.Component {
     return posts.map((post) => {
       return {
         key: post.id,
-        jsx: (
+        element: (
           <Post
             id={ post.id }
             title={ post.title }
@@ -83,27 +85,42 @@ class PostsList extends React.Component {
   }
 
   __deletePost(id) {
-    const posts = this.state.posts.filter((post) => {
-      return post.id !== id;
-    });
+    postsApi.deletePost(id)
+      .then(() => {
+        const posts = this.state.posts.filter((post) => {
+          return post.id !== id;
+        });
 
-    this.setState({
-      posts,
-    });
-
-    postsApi.deletePost(id);
+        this.setState({ posts });
+      })
+      .catch((error) => {
+        this.__showDeleteModal(
+          id,
+          "Encountered error while deleting post.",
+          "Error",
+          this.__getPostDeleteErrorModalButtons(),
+        );
+      });
   }
 
   __onPostDeleteClick(id) {
-    this.__showDeleteModal(id);
+    this.__showDeleteModal(
+      id,
+      "Are you sure you want to delete this post?",
+      "Confirm",
+      this.__getPostDeleteConfirmModalButtons(),
+    );
   }
 
-  __showDeleteModal(postId) {
+  __showDeleteModal(postId, message, header, buttons) {
     this.setState({
       deleteModal: {
         ...this.state.deleteModal,
         isDisplayed: true,
         postId,
+        message,
+        buttons,
+        header,
       },
     });
   }
@@ -119,14 +136,23 @@ class PostsList extends React.Component {
         ...this.state.deleteModal,
         isDisplayed: false,
         postId: 0,
+        message: "",
+        buttons: [],
+        header: "",
       },
     });
   }
 
-  __getModalButtons() {
+  __getPostDeleteConfirmModalButtons() {
     return [
-      { label: "Cancel", callback: () => this.__hideDeleteModal() },
-      { label: "Confirm", callback: () => this.__onDeleteModalAccept() },
+      { label: 'Cancel', callback: () => this.__hideDeleteModal() },
+      { label: 'Confirm', callback: () => this.__onDeleteModalAccept() },
+    ];
+  }
+
+  __getPostDeleteErrorModalButtons() {
+    return [
+      { label: "Ok", callback: () => this.__hideDeleteModal() },
     ];
   }
 
@@ -136,10 +162,10 @@ class PostsList extends React.Component {
         <List items={ this.__getPosts(this.__filter([ ...this.state.posts ])) } />
         <Modal
           isDisplayed={ this.state.deleteModal.isDisplayed }
-          header="Confirm"
-          buttons={ this.__getModalButtons() }
+          header={ this.state.deleteModal.header }
+          buttons={ this.state.deleteModal.buttons }
         >
-          Are you sure you want to delete this post?
+          { this.state.deleteModal.message }
         </Modal>
       </div>
     )

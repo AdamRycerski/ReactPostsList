@@ -57,12 +57,7 @@ class PostDetail extends React.Component {
   }
 
   __getPostData() {
-    return {
-      title: this.__getPostProperty('title'),
-      body: this.__getPostProperty('body'),
-      authorId: this.__getPostProperty('authorId'),
-      id: this.__getPostProperty('id'),
-    }
+    return { ...this.state.post };
   }
 
   __changePostProperties(props) {
@@ -79,7 +74,9 @@ class PostDetail extends React.Component {
   }
 
   __onInputChange(event) {
+    console.log(event.target);
     this.__changePostProperties({ [event.target.name]: event.target.value });
+    console.log(this.state.post);
   }
 
   __onSubmit(event) {
@@ -110,26 +107,6 @@ class PostDetail extends React.Component {
       this.__displayValidationMessage(errorMessage);
       return errorMessage;
     }
-  }
-
-  __getUserSelectOptions(users) {
-    const options = users.map((user) => {
-      return (
-        <option value={ Number(user.id) } key={ user.id }>
-          { user.name }
-        </option>
-      );
-    });
-    options.unshift(this.__getDefaultUserSelectOption());
-    return options;
-  }
-
-  __getDefaultUserSelectOption() {
-    return (
-      <option value={ -1 } key={ -1 }>
-        --- select author ---
-      </option>
-    );
   }
 
   __getBreadcrumbsLinks() {
@@ -190,23 +167,35 @@ class PostDetail extends React.Component {
               />
             </div>
             <div className='form-group'>
-              <label htmlFor='author'>Specify post author:</label>
-              <select
-                name='authorId'
-                className='form-control'
-                id='author'
-                onChange={ e => this.__onInputChange(e) }
-                value={ this.__getPostProperty('authorId') }
-              >
-                { this.__getUserSelectOptions(users) }
-              </select>
-            </div>
+              <label>Specify post author:</label>
+                { this.__getUserRadios(users) }
+              </div>
             <Link to='/' className='btn btn-default'>Cancel</Link>
             <button type='submit' className='btn btn-default'>Save</button>
           </form>
         </div>
       </div>
     );
+  }
+
+  __getUserRadios(users) {
+    const options = users.map((user) => {
+      return (
+        <div className='radio' key={ user.id } >
+          <label>
+            <input
+              type='radio'
+              value={ Number(user.id) }
+              name='authorId'
+              onChange={ e => this.__onInputChange(e) }
+              checked={ Number(user.id) === Number(this.__getPostProperty("authorId")) }
+            />
+            { user.name }
+          </label>
+        </div>
+      );
+    });
+    return options;
   }
 
   __getCommentsSection() {

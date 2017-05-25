@@ -11,7 +11,7 @@ class CommentsList extends React.Component {
   static defaultProps = {
     postId: -1,
   }
-  
+
   constructor(props) {
     super(props);
 
@@ -34,7 +34,7 @@ class CommentsList extends React.Component {
     return comments.map((comment) => {
       return {
         key: comment.id,
-        jsx: <Comment title={ comment.name } body={ comment.body } email={ comment.email} />,
+        element: <Comment title={ comment.name } body={ comment.body } email={ comment.email} />,
       };
     });
   }
