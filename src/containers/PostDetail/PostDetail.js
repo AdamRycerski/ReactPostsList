@@ -5,7 +5,8 @@ import './PostDetail.scss';
 
 import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
 import Modal from '../../components/Modal/Modal';
-import CommentsList from '../CommentsList/CommentsList'
+import CommentsList from '../CommentsList/CommentsList';
+import { authorize } from '../Authorize/Authorize';
 
 import users from '../../usersMock';
 import { postsApi } from '../../PostsAPI';
@@ -239,4 +240,4 @@ class PostDetail extends React.Component {
   }
 }
 
-export default PostDetail;
+export default authorize(PostDetail);

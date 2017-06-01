@@ -12,7 +12,6 @@ class PostsAPI {
 
   updatePost(id, data) {
     let request = this.__createRequestData("PUT", this.__getUpdatePostRequestBody(data));
-    console.log(request);
     return fetch(this.__getPostUrl(id), request)
       .then((res) => { return this.__handleResponse(res); })
   }

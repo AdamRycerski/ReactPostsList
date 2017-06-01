@@ -5,6 +5,7 @@ import './PostsIndex.scss';
 
 import Searchbar from '../../components/Searchbar/Searchbar';
 import PostsList from '../PostsList/PostsList';
+import { authorize } from '../Authorize/Authorize';
 
 
 class PostsIndex extends React.Component {
@@ -46,4 +47,4 @@ class PostsIndex extends React.Component {
   }
 }
 
-export default PostsIndex;
+export default authorize(PostsIndex);
