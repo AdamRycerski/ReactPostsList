@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
 import './PostsList.scss';
 
@@ -7,7 +8,7 @@ import Post from '../../components/Post/Post';
 import List from '../../components/List/List';
 import Modal from '../../components/Modal/Modal';
 
-import { postsApi } from '../../PostsAPI';
+import { fetchPosts, requestPostDelete } from '../../actions/posts';
 
 class PostsList extends React.Component {
   static propTypes = {
@@ -30,17 +31,23 @@ class PostsList extends React.Component {
 
     this.state = {
       posts: [],
-      deleteModal: {
+      modal: {
         isDisplayed: false,
-        postId: 0,
         message: "",
         header: "",
+        buttons: [],
       },
     };
   }
 
   componentDidMount() {
     this.__fetchPosts();
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (!this.props.posts.deletion.failure && nextProps.posts.deletion.failure) {
+      this.__showDeleteErrorModal();
+    }
   }
 
   __filter(posts) {
@@ -64,8 +71,7 @@ class PostsList extends React.Component {
   }
 
   __fetchPosts() {
-    return postsApi.fetchPosts()
-      .then( posts => this.setState({ posts }) );
+    this.props.fetchPosts();
   }
 
   __getPosts(posts) {
@@ -84,40 +90,11 @@ class PostsList extends React.Component {
     });
   }
 
-  __deletePost(id) {
-    postsApi.deletePost(id)
-      .then(() => {
-        const posts = this.state.posts.filter((post) => {
-          return post.id !== id;
-        });
-
-        this.setState({ posts });
-      })
-      .catch((error) => {
-        this.__showDeleteModal(
-          id,
-          "Encountered error while deleting post.",
-          "Error",
-          this.__getPostDeleteErrorModalButtons(),
-        );
-      });
-  }
-
-  __onPostDeleteClick(id) {
-    this.__showDeleteModal(
-      id,
-      "Are you sure you want to delete this post?",
-      "Confirm",
-      this.__getPostDeleteConfirmModalButtons(),
-    );
-  }
-
-  __showDeleteModal(postId, message, header, buttons) {
+  __showModal(message, header, buttons) {
     this.setState({
-      deleteModal: {
-        ...this.state.deleteModal,
+      modal: {
+        ...this.state.modal,
         isDisplayed: true,
-        postId,
         message,
         buttons,
         header,
@@ -125,17 +102,11 @@ class PostsList extends React.Component {
     });
   }
 
-  __onDeleteModalAccept() {
-    this.__deletePost(this.state.deleteModal.postId);
-    this.__hideDeleteModal();
-  }
-
-  __hideDeleteModal() {
+  __hideModal() {
     this.setState({
-      deleteModal: {
-        ...this.state.deleteModal,
+      modal: {
+        ...this.state.modal,
         isDisplayed: false,
-        postId: 0,
         message: "",
         buttons: [],
         header: "",
@@ -143,33 +114,85 @@ class PostsList extends React.Component {
     });
   }
 
-  __getPostDeleteConfirmModalButtons() {
-    return [
-      { label: 'Cancel', callback: () => this.__hideDeleteModal() },
-      { label: 'Confirm', callback: () => this.__onDeleteModalAccept() },
-    ];
+  __showDeleteErrorModal() {
+    this.__showModal(
+      "Encountered error while deleting post.",
+      "Error",
+      this.__getPostDeleteErrorModalButtons(),
+    );
   }
 
   __getPostDeleteErrorModalButtons() {
     return [
-      { label: "Ok", callback: () => this.__hideDeleteModal() },
+      { label: "Ok", callback: () => this.__hideModal() },
     ];
+  }
+
+  __onPostDeleteClick(id) {
+    this.__showPostDeleteConfirmModal(id);
+  }
+
+  __showPostDeleteConfirmModal(postId) {
+    this.__showModal(
+      "Are you sure you want to delete this post?",
+      "Confirm",
+      this.__getPostDeleteConfirmModalButtons(postId),
+    );
+  }
+
+  __getPostDeleteConfirmModalButtons(postId) {
+    return [
+      { label: 'Cancel', callback: () => this.__hideModal() },
+      { label: 'Confirm', callback: () => this.__onDeleteModalAccept(postId) },
+    ];
+  }
+
+  __onDeleteModalAccept(postId) {
+    this.__deletePost(postId);
+    this.__hideModal();
+  }
+
+  __deletePost(id) {
+    this.props.requestPostDelete(id);
+  }
+
+  __renderPosts() {
+    if (this.props.posts.fetch.failure) {
+      return ( <span>Error occurred when loading posts.</span> );
+    } else if (this.props.posts.fetch.pending) {
+      return ( <span>Loading posts...</span> );
+    } else {
+      return ( <List items={ this.__getPosts(this.__filter(Object.values(this.props.posts.items))) } /> );
+    }
   }
 
   render() {
     return (
       <div>
-        <List items={ this.__getPosts(this.__filter([ ...this.state.posts ])) } />
+        { this.__renderPosts() }
         <Modal
-          isDisplayed={ this.state.deleteModal.isDisplayed }
-          header={ this.state.deleteModal.header }
-          buttons={ this.state.deleteModal.buttons }
+          isDisplayed={ this.state.modal.isDisplayed }
+          header={ this.state.modal.header }
+          buttons={ this.state.modal.buttons }
         >
-          { this.state.deleteModal.message }
+          { this.state.modal.message }
         </Modal>
       </div>
     )
   }
 }
 
-export default PostsList;
+function mapStateToProps(state) {
+  return {
+    posts: state.posts,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    fetchPosts: () => dispatch(fetchPosts(dispatch)),
+    requestPostDelete: (id) => dispatch(requestPostDelete(id, dispatch)),
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(PostsList);
