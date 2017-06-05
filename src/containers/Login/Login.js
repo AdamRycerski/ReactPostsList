@@ -1,11 +1,12 @@
 import React from 'react';
+import { connect } from 'react-redux';
 
 import './Login.scss';
 
 import Modal from '../../components/Modal/Modal';
 
-import { loginApi } from '../../LoginAPI';
-import { AUTH_TOKEN } from '../../config';
+import { fetchActiveUserData } from '../../actions/activeUser';
+import { requestUserLogin } from '../../actions/auth';
 
 class Login extends React.Component {
   constructor(props) {
@@ -20,23 +21,45 @@ class Login extends React.Component {
         body: '',
         buttons: [],
       }
+    };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.__wasLoginFailed(nextProps)) {
+      this.__handleReject(401);
+    } else if (this.__wasLoginSuccessful(nextProps)) {
+      this.__handleSuccess(nextProps.auth.token);
     }
   }
+
+  __wasLoginFailed(nextProps) {
+    return (
+      this.props.auth.login.pending &&
+      !nextProps.auth.login.pending &&
+      nextProps.auth.login.failure
+    );
+  }
+
+  __wasLoginSuccessful(nextProps) {
+    return (
+      this.props.auth.login.pending &&
+      !nextProps.auth.login.pending &&
+      nextProps.auth.login.success
+    );
+  }
+
   __onSubmit(e) {
     e.preventDefault();
 
-    loginApi.login(this.state.login, this.state.password)
-      .then(res => this.__handleSuccess(res))
-      .catch(status => this.__handleReject(status));
+    this.props.requestUserLogin({
+      login: this.state.login,
+      password: this.state.password,
+    });
   }
 
-  __handleSuccess(res) {
-    this.__saveAuthToken(res.token);
+  __handleSuccess(token) {
+    this.props.fetchActiveUserData(token);
     this.props.router.push('/');
-  }
-
-  __saveAuthToken(token) {
-    localStorage.setItem(AUTH_TOKEN, token);
   }
 
   __handleReject(status) {
@@ -47,7 +70,6 @@ class Login extends React.Component {
       default:
         break;
     }
-    return;
   }
 
   __showInvalidCredentialsModal() {
@@ -133,4 +155,17 @@ class Login extends React.Component {
   }
 }
 
-export default Login;
+function mapStateToProps(state) {
+  return {
+    auth: state.auth,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    fetchActiveUserData: (token) => dispatch(fetchActiveUserData(token, dispatch)),
+    requestUserLogin: (credentials) => dispatch(requestUserLogin(credentials, dispatch)),
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

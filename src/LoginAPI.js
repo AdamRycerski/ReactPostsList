@@ -10,13 +10,18 @@ class LoginAPI {
 
   checkAuthorized() {
     const token = localStorage.getItem(AUTH_TOKEN);
-    if (!token) {
-      return Promise.reject();
-    }
+    return token ? this.fetchUserData(token) : Promise.reject();
+  }
+
+  fetchUserData(token) {
     const request = this.__createRequestData('GET', '', this.__getAuthRequestHeaders(token));
     return fetch(this.__getUserInfoUrl(), request)
       .then(res => this.__handleResponse(res));
   }
+
+   getAuthToken() {
+    return localStorage.getItem(AUTH_TOKEN);
+   }
 
   __getAuthRequestHeaders(token) {
     const headers = new Headers();
