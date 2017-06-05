@@ -9,9 +9,9 @@ import Modal from '../../components/Modal/Modal';
 import CommentsList from '../CommentsList/CommentsList';
 import { authorize } from '../Authorize/Authorize';
 
-import users from '../../usersMock';
 import { addPost, updatePost } from '../../actions/posts';
 import { fetchActivePost } from '../../actions/activePost';
+import { fetchAuthors } from '../../actions/authors';
 
 
 class PostDetail extends React.Component {
@@ -39,6 +39,7 @@ class PostDetail extends React.Component {
     if (this.__getPostProperty("id")) {
       this.props.fetchActivePost(this.__getPostProperty("id"));
     }
+    this.props.fetchAuthors();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -50,6 +51,10 @@ class PostDetail extends React.Component {
       this.__displayPostUpdateErrorMessage();
     } else if (this.__isPostUpdateSuccess(nextProps)) {
       this.__returnToHomepage();
+    }
+
+    if (this.__isAuthorsFetchFailure(nextProps)) {
+      this.__displayAuthorsFetchErrorMessage();
     }
   }
 
@@ -82,6 +87,14 @@ class PostDetail extends React.Component {
       this.props.posts.update.pending &&
       !nextProps.posts.update.pending &&
       nextProps.posts.update.success
+    );
+  }
+
+  __isAuthorsFetchFailure(nextProps) {
+    return (
+      this.props.authors.fetch.pending &&
+      !nextProps.authors.fetch.pending &&
+      nextProps.authors.fetch.failure
     );
   }
 
@@ -180,6 +193,14 @@ class PostDetail extends React.Component {
     );
   }
 
+  __displayAuthorsFetchErrorMessage() {
+    this.__showModal(
+      'Encountered error when fetching authors list.',
+      'Error',
+      [ { label: "ok", callback: e => this.__hideValidationMessage() } ],
+    );
+  }
+
   __showModal(message, header, buttons) {
     this.setState({
       modal: {
@@ -235,7 +256,7 @@ class PostDetail extends React.Component {
             </div>
             <div className='form-group'>
               <label>Specify post author:</label>
-                { this.__getUserRadios(users) }
+                { this.__getUserRadios(Object.values(this.props.authors.authors)) }
               </div>
             <Link to='/' className='btn btn-default'>Cancel</Link>
             <button type='submit' className='btn btn-default'>Save</button>
@@ -257,7 +278,7 @@ class PostDetail extends React.Component {
               onChange={ e => this.__onInputChange(e) }
               checked={ Number(user.id) === Number(this.__getPostProperty("authorId")) }
             />
-            { user.name }
+            { `${user.firstName} ${user.lastName}` }
           </label>
         </div>
       );
@@ -310,6 +331,7 @@ function mapStateToProps(state) {
   return {
     posts: state.posts,
     activePost: state.activePost,
+    authors: state.authors,
   };
 }
 
@@ -318,6 +340,7 @@ function mapDispatchToProps(dispatch) {
     addPost: (post) => dispatch(addPost(post, dispatch)),
     updatePost: (post) => dispatch(updatePost(post, dispatch)),
     fetchActivePost: (id) => dispatch(fetchActivePost(id, dispatch)),
+    fetchAuthors: () => dispatch(fetchAuthors(dispatch)),
   };
 }
 

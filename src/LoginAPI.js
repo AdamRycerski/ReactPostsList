@@ -1,6 +1,7 @@
 import {
   loginApiUrl,
   AUTH_TOKEN,
+  apiUrl,
 } from "./config";
 
 class LoginAPI {
@@ -72,6 +73,18 @@ class LoginAPI {
 
   __getUserInfoUrl() {
     return `${this.url}/me`;
+  }
+
+  // authors
+  __getAuthorsUrl() {
+    return `${apiUrl}/authors`;
+  }
+
+  fetchAuthors() {
+    const token = localStorage.getItem(AUTH_TOKEN);
+    const request = this.__createRequestData('GET', '', this.__getAuthRequestHeaders(token));
+    return fetch(this.__getAuthorsUrl(), request)
+      .then(res => this.__handleResponse(res));
   }
 }
 
