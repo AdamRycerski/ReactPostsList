@@ -2,9 +2,10 @@ import { postsApi } from '../PostsAPI';
 
 export const FETCH_POSTS = 'FETCH_POST';
 export function fetchPosts(dispatch) {
-  postsApi.fetchPosts()
-    .then(posts => dispatch(receivePosts(posts)))
-    .catch(status => dispatch(invalidatePosts(status)));
+  postsApi.fetchPosts().then(
+    posts => dispatch(receivePosts(posts)),
+    status => dispatch(invalidatePosts(status)),
+  );
 
   return {
     type: FETCH_POSTS,
@@ -32,9 +33,10 @@ export function receivePosts(posts) {
 
 export const ADD_POST = "ADD_POST";
 export function addPost(post, dispatch) {
-  postsApi.addPost(post)
-    .then(res => dispatch(receivePost({ ...post, ...res })))
-    .catch(status => dispatch(invalidatePost(status)));
+  postsApi.addPost(post).then(
+    res => dispatch(receivePost({ ...post, ...res })),
+    status => dispatch(invalidatePost(status)),
+  );
 
   return {
     type: ADD_POST,
@@ -44,9 +46,10 @@ export function addPost(post, dispatch) {
 
 export const UPDATE_POST = "UPDATE_POST";
 export function updatePost(post, dispatch) {
-  postsApi.updatePost(post.id, post)
-    .then(res => dispatch(receivePost({ ...post, ...res })))
-    .catch(status => dispatch(invalidatePost(status)));
+  postsApi.updatePost(post.id, post).then(
+    res => dispatch(receivePost({ ...post, ...res })),
+    status => dispatch(invalidatePost(status)),
+  );
 
   return {
     type: UPDATE_POST,
@@ -74,9 +77,10 @@ export function invalidatePost() {
 
 export const REQUEST_POST_DELETE = "REQUEST_POST_DELETE";
 export function requestPostDelete(id, dispatch) {
-  postsApi.deletePost(id)
-    .then(() => dispatch(deletePost(id)))
-    .catch(() => dispatch(invalidatePostDelete()))
+  postsApi.deletePost(id).then(
+    () => dispatch(deletePost(id)),
+    () => dispatch(invalidatePostDelete()),
+  );
 
   return {
     type: REQUEST_POST_DELETE,

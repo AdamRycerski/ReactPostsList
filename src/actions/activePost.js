@@ -2,9 +2,10 @@ import { postsApi } from '../PostsAPI';
 
 export const FETCH_ACTIVE_POST = 'FETCH_ACTIVE_POST';
 export function fetchActivePost(id, dispatch) {
-  postsApi.fetchPost(id)
-    .then(post => dispatch(receiveActivePost(post)))
-    .catch(() => dispatch(invalidateActivePost()));
+  postsApi.fetchPost(id).then(
+    post => dispatch(receiveActivePost(post)),
+    () => dispatch(invalidateActivePost()),
+  );
 
   return {
     type: FETCH_ACTIVE_POST,

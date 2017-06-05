@@ -2,9 +2,10 @@ import { loginApi } from '../LoginAPI';
 
 export const FETCH_ACTIVE_USER_DATA = 'FETCH_ACTIVE_USER_DATA';
 export function fetchActiveUserData(token, dispatch) {
-  loginApi.fetchUserData(token)
-    .then(data => dispatch(receiveActiveUserData(data)))
-    .catch(() => dispatch(invalidateActiveUserData()));
+  loginApi.fetchUserData(token).then(
+    data => dispatch(receiveActiveUserData(data)),
+    () => dispatch(invalidateActiveUserData()),
+  );
 
   return {
     type: FETCH_ACTIVE_USER_DATA,

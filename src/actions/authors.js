@@ -4,9 +4,10 @@ import {
 
 export const FETCH_AUTHORS = 'FETCH_AUTHORS';
 export function fetchAuthors(dispatch) {
-  loginApi.fetchAuthors()
-    .then(authors => dispatch(receiveAuthors(authors)))
-    .catch(e => dispatch(invalidateAuthors()));
+  loginApi.fetchAuthors().then(
+    authors => dispatch(receiveAuthors(authors)),
+    e => dispatch(invalidateAuthors()),
+  );
 
   return {
     type: FETCH_AUTHORS,
