@@ -6,7 +6,7 @@ import './PostsList.scss';
 
 import Post from '../../components/Post/Post';
 import List from '../../components/List/List';
-import Modal from '../../components/Modal/Modal';
+import { Modal, ModalState } from '../../components/Modal/Modal';
 
 import { fetchPosts, requestPostDelete } from '../../actions/posts';
 
@@ -31,12 +31,7 @@ class PostsList extends React.Component {
 
     this.state = {
       posts: [],
-      modal: {
-        isDisplayed: false,
-        message: "",
-        header: "",
-        buttons: [],
-      },
+      modal: ModalState.hide(),
     };
   }
 
@@ -84,6 +79,7 @@ class PostsList extends React.Component {
             title={ post.title }
             body={ post.body }
             onDelete={ id => this.__onPostDeleteClick(id) }
+            highlight={ post.userId === this.props.activeUserId }
           />
         ),
       };
@@ -92,25 +88,13 @@ class PostsList extends React.Component {
 
   __showModal(message, header, buttons) {
     this.setState({
-      modal: {
-        ...this.state.modal,
-        isDisplayed: true,
-        message,
-        buttons,
-        header,
-      },
+      modal: ModalState.display(header, message, buttons),
     });
   }
 
   __hideModal() {
     this.setState({
-      modal: {
-        ...this.state.modal,
-        isDisplayed: false,
-        message: "",
-        buttons: [],
-        header: "",
-      },
+      modal: ModalState.hide(),
     });
   }
 
@@ -170,13 +154,7 @@ class PostsList extends React.Component {
     return (
       <div>
         { this.__renderPosts() }
-        <Modal
-          isDisplayed={ this.state.modal.isDisplayed }
-          header={ this.state.modal.header }
-          buttons={ this.state.modal.buttons }
-        >
-          { this.state.modal.message }
-        </Modal>
+        <Modal { ...this.state.modal.getProps() } />
       </div>
     )
   }
@@ -185,6 +163,7 @@ class PostsList extends React.Component {
 function mapStateToProps(state) {
   return {
     posts: state.posts,
+    activeUserId: state.activeUser.id,
   };
 }
 

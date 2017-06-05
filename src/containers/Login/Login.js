@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import './Login.scss';
 
-import Modal from '../../components/Modal/Modal';
+import { Modal, ModalState } from '../../components/Modal/Modal';
 
 import { fetchActiveUserData } from '../../actions/activeUser';
 import { requestUserLogin } from '../../actions/auth';
@@ -15,12 +15,7 @@ class Login extends React.Component {
     this.state = {
       login: '',
       password: '',
-      modal: {
-        isDisplayed: false,
-        header: '',
-        body: '',
-        buttons: [],
-      }
+      modal: ModalState.hide(),
     };
   }
 
@@ -81,21 +76,11 @@ class Login extends React.Component {
   }
 
   __showModal(body, header, buttons) {
-    this.setState({ modal: {
-      isDisplayed: true,
-      body,
-      header,
-      buttons,
-    }});
+    this.setState({ modal: ModalState.display(header, body, buttons) });
   }
 
   __hideModal() {
-    this.setState({ modal: {
-      isDisplayed: false,
-      body: '',
-      header: '',
-      buttons: [],
-    }});
+    this.setState({ modal: ModalState.hide() });
   }
 
   __renderFormSection() {
@@ -135,13 +120,7 @@ class Login extends React.Component {
 
   __renderModal() {
     return (
-      <Modal
-        isDisplayed={ this.state.modal.isDisplayed }
-        header={ this.state.modal.header }
-        buttons={ this.state.modal.buttons }
-      >
-        { this.state.modal.body }
-      </Modal>
+      <Modal { ...this.state.modal.getProps() } />
     );
   }
 

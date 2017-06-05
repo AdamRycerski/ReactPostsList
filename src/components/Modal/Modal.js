@@ -8,13 +8,18 @@ import './Modal.scss';
 class Modal extends React.Component {
   static defaultProps = {
     isDisplayed: false,
-    header: "",
+    header: '',
+    body: '',
     buttons: [],
   }
 
   static propTypes = {
     isDisplayed: PropTypes.bool,
     header: PropTypes.string,
+    body: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.element,
+    ]),
     buttons: PropTypes.arrayOf(PropTypes.shape({
       label: PropTypes.string.isRequired,
       callback: PropTypes.func.isRequired,
@@ -54,7 +59,7 @@ class Modal extends React.Component {
   __getBody() {
     return (
       <div className='modal-body'>
-        { this.props.children }
+        { this.props.body }
       </div>
     );
   }
@@ -76,4 +81,46 @@ class Modal extends React.Component {
   }
 }
 
-export default Modal;
+class ModalState {
+  static hide() {
+    return new ModalState(false);
+  }
+
+  static display(header = '', body = '', buttons = []) {
+    return new ModalState(true, header, body, buttons);
+  }
+
+  constructor(isDisplayed = false, header = '', body = '', buttons = []) {
+    this.__isDisplayed = isDisplayed;
+    this.__header = header;
+    this.__body = body;
+    this.__buttons = [...buttons];
+  }
+
+  isDisplayed() {
+    return this.__isDisplayed;
+  }
+
+  getHeader() {
+    return this.__header;
+  }
+
+  getBody() {
+    return this.__body;
+  }
+
+  getButtons() {
+    return this.__buttons;
+  }
+
+  getProps() {
+    return {
+      isDisplayed: this.isDisplayed(),
+      header: this.getHeader(),
+      body: this.getBody(),
+      buttons: this.getButtons(),
+    }
+  }
+}
+
+export { Modal, ModalState };

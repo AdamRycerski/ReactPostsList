@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import './PostDetail.scss';
 
 import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
-import Modal from '../../components/Modal/Modal';
+import { Modal, ModalState } from '../../components/Modal/Modal';
 import CommentsList from '../CommentsList/CommentsList';
 import { authorize } from '../Authorize/Authorize';
 
@@ -20,12 +20,7 @@ class PostDetail extends React.Component {
 
     this.state = {
       isPostNew: this.props.isPostNew,
-      modal: {
-        isDisplayed: false,
-        message: '',
-        header: '',
-        buttons: [],
-      },
+      modal: ModalState.hide(),
       post: {
         id: Number(this.props.params.id),
         title: '',
@@ -203,25 +198,13 @@ class PostDetail extends React.Component {
 
   __showModal(message, header, buttons) {
     this.setState({
-      modal: {
-        ...this.state.modal,
-        isDisplayed: true,
-        message,
-        header,
-        buttons,
-      }
+      modal: ModalState.display(header, message, buttons),
     });
   }
 
   __hideModal() {
     this.setState({
-      modal: {
-        ...this.state.modal,
-        isDisplayed: false,
-        message: '',
-        buttons: [],
-        header: '',
-      },
+      modal: ModalState.hide(),
     });
   }
 
@@ -305,13 +288,7 @@ class PostDetail extends React.Component {
 
   __renderModal() {
     return (
-      <Modal
-        isDisplayed={ this.state.modal.isDisplayed }
-        header={ this.state.modal.header }
-        buttons={ this.state.modal.buttons }
-      >
-        { this.state.modal.message }
-      </Modal>
+      <Modal { ...this.state.modal.getProps() } />
     );
   }
 
