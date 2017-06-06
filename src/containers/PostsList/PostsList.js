@@ -9,6 +9,7 @@ import List from '../../components/List/List';
 import Modal from '../../components/Modal/Modal';
 
 import { fetchPosts, requestPostDelete } from '../../actions/posts';
+import { hideError } from '../../actions/displayedError';
 
 class PostsList extends React.Component {
   static propTypes = {
@@ -42,12 +43,6 @@ class PostsList extends React.Component {
 
   componentDidMount() {
     this.__fetchPosts();
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (!this.props.posts.deletion.failure && nextProps.posts.deletion.failure) {
-      this.__showDeleteErrorModal();
-    }
   }
 
   __filter(posts) {
@@ -114,20 +109,6 @@ class PostsList extends React.Component {
     });
   }
 
-  __showDeleteErrorModal() {
-    this.__showModal(
-      "Encountered error while deleting post.",
-      "Error",
-      this.__getPostDeleteErrorModalButtons(),
-    );
-  }
-
-  __getPostDeleteErrorModalButtons() {
-    return [
-      { label: "Ok", callback: () => this.__hideModal() },
-    ];
-  }
-
   __onPostDeleteClick(id) {
     this.__showPostDeleteConfirmModal(id);
   }
@@ -166,6 +147,18 @@ class PostsList extends React.Component {
     }
   }
 
+  __renderErrorModal() {
+    return (
+      <Modal
+        isDisplayed={ this.props.displayedError.isDisplayed }
+        header={ this.props.displayedError.title }
+        buttons={ [ { label: "ok", callback: e => this.props.hideError() } ] }
+      >
+        { this.props.displayedError.message }
+      </Modal>
+    );
+  }
+
   render() {
     return (
       <div>
@@ -177,6 +170,7 @@ class PostsList extends React.Component {
         >
           { this.state.modal.message }
         </Modal>
+        { this.__renderErrorModal() }
       </div>
     )
   }
@@ -185,6 +179,7 @@ class PostsList extends React.Component {
 function mapStateToProps(state) {
   return {
     posts: state.posts,
+    displayedError: state.displayedError,
   };
 }
 
@@ -192,6 +187,7 @@ function mapDispatchToProps(dispatch) {
   return {
     fetchPosts: () => dispatch(fetchPosts(dispatch)),
     requestPostDelete: (id) => dispatch(requestPostDelete(id, dispatch)),
+    hideError: () => dispatch(hideError()),
   };
 }
 

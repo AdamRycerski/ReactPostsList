@@ -11,6 +11,7 @@ import CommentsList from '../CommentsList/CommentsList'
 import users from '../../usersMock';
 import { addPost, updatePost } from '../../actions/posts';
 import { fetchActivePost } from '../../actions/activePost';
+import { hideError } from '../../actions/displayedError';
 
 
 class PostDetail extends React.Component {
@@ -43,10 +44,6 @@ class PostDetail extends React.Component {
   componentWillReceiveProps(nextProps) {
     if (this.__isPostFetchSuccess(nextProps)) {
       this.__changePostProperties({...nextProps.activePost.item});
-    } else if (this.__isPostFetchFailure(nextProps)) {
-      this.__displayPostFetchErrorMessage();
-    } else if (this.__isPostUpdateFailure(nextProps)) {
-      this.__displayPostUpdateErrorMessage();
     } else if (this.__isPostUpdateSuccess(nextProps)) {
       this.__returnToHomepage();
     }
@@ -60,36 +57,12 @@ class PostDetail extends React.Component {
     );
   }
 
-  __isPostFetchFailure(nextProps) {
-    return (
-      this.props.activePost.fetch.pending &&
-      !nextProps.activePost.fetch.pending &&
-      nextProps.activePost.fetch.failure
-    );
-  }
-
-  __isPostUpdateFailure(nextProps) {
-    return (
-      this.props.posts.update.pending &&
-      !nextProps.posts.update.pending &&
-      nextProps.posts.update.failure
-    );
-  }
-
   __isPostUpdateSuccess(nextProps) {
     return (
       this.props.posts.update.pending &&
       !nextProps.posts.update.pending &&
       nextProps.posts.update.success
     );
-  }
-
-  __updatePost() {
-    this.props.updatePost(this.__getPostData());
-  }
-
-  __addPost() {
-    this.props.addPost(this.__getPostData());
   }
 
   __getPostData() {
@@ -116,12 +89,14 @@ class PostDetail extends React.Component {
   __onSubmit(event) {
     event.preventDefault();
 
-    if (this.__getValidationError()) return false;
+    if (this.__getValidationError()) {
+      return false;
+    }
 
     if (this.__getPostProperty("id")) {
-      this.__updatePost();
+      this.props.updatePost(this.__getPostData());
     } else {
-      this.__addPost();
+      this.props.addPost(this.__getPostData());
     }
   }
 
@@ -135,9 +110,7 @@ class PostDetail extends React.Component {
       this.__getPostProperty('body') === '' ||
       Number(this.__getPostProperty('authorId')) === -1
     ) {
-      const errorMessage = 'All fields must be filled out.';
-      this.__displayValidationMessage(errorMessage);
-      return errorMessage;
+      return 'All fields must be filled out.';
     }
   }
 
@@ -149,34 +122,6 @@ class PostDetail extends React.Component {
         path: `/posts/${this.__getPostProperty('id')}`
       },
     ];
-  }
-
-  __hideValidationMessage() {
-    this.__hideModal();
-  }
-
-  __displayValidationMessage(message) {
-    this.__showModal(
-      message,
-      'Validation Error',
-      [ { label: "ok", callback: e => this.__hideValidationMessage() } ],
-    );
-  }
-
-  __displayPostFetchErrorMessage() {
-    this.__showModal(
-      'Encountered error when fetching post data.',
-      'Error',
-      [ { label: "ok", callback: e => this.__hideValidationMessage() } ],
-    );
-  }
-
-  __displayPostUpdateErrorMessage() {
-    this.__showModal(
-      'Encountered error when updating post data.',
-      'Error',
-      [ { label: "ok", callback: e => this.__hideValidationMessage() } ],
-    );
   }
 
   __showModal(message, header, buttons) {
@@ -206,7 +151,7 @@ class PostDetail extends React.Component {
   __renderFormSection() {
     const header = this.__getPostProperty("id") ? "Edit Post" : "Add Post";
     return (
-      <div id='PostForm'>
+      <div id="PostForm">
         <h3>{ header }</h3>
         <div className='form-group'>
           <form onSubmit={ e => this.__onSubmit(e) }>
@@ -265,7 +210,9 @@ class PostDetail extends React.Component {
   }
 
   __renderCommentsSection() {
-    if (!this.__getPostProperty("id")) return;
+    if (!this.__getPostProperty("id")) {
+      return;
+    }
 
     return (
       <div>
@@ -284,11 +231,11 @@ class PostDetail extends React.Component {
   __renderModal() {
     return (
       <Modal
-        isDisplayed={ this.state.modal.isDisplayed }
-        header={ this.state.modal.header }
-        buttons={ this.state.modal.buttons }
+        isDisplayed={ this.props.displayedError.isDisplayed }
+        header={ this.props.displayedError.title }
+        buttons={ [ { label: "ok", callback: e => this.props.hideError() } ] }
       >
-        { this.state.modal.message }
+        { this.props.displayedError.message }
       </Modal>
     );
   }
@@ -309,6 +256,7 @@ function mapStateToProps(state) {
   return {
     posts: state.posts,
     activePost: state.activePost,
+    displayedError: state.displayedError,
   };
 }
 
@@ -317,6 +265,7 @@ function mapDispatchToProps(dispatch) {
     addPost: (post) => dispatch(addPost(post, dispatch)),
     updatePost: (post) => dispatch(updatePost(post, dispatch)),
     fetchActivePost: (id) => dispatch(fetchActivePost(id, dispatch)),
+    hideError: () => dispatch(hideError()),
   };
 }
 
