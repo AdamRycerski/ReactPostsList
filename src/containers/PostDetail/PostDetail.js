@@ -1,14 +1,17 @@
 import React from 'react';
 import { Link }from 'react-router';
+import { connect } from 'react-redux';
 
 import './PostDetail.scss';
 
 import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
 import Modal from '../../components/Modal/Modal';
-import CommentsList from '../CommentsList/CommentsList'
+import CommentsList from '../CommentsList/CommentsList';
+import { authorize } from '../Authorize/Authorize';
 
 import users from '../../usersMock';
-import { postsApi } from '../../PostsAPI';
+import { addPost, updatePost } from '../../actions/posts';
+import { fetchActivePost } from '../../actions/activePost';
 
 
 class PostDetail extends React.Component {
@@ -17,9 +20,11 @@ class PostDetail extends React.Component {
 
     this.state = {
       isPostNew: this.props.isPostNew,
-      validation: {
-        isMessageDisplayed: false,
+      modal: {
+        isDisplayed: false,
         message: '',
+        header: '',
+        buttons: [],
       },
       post: {
         id: Number(this.props.params.id),
@@ -32,28 +37,60 @@ class PostDetail extends React.Component {
 
   componentDidMount() {
     if (this.__getPostProperty("id")) {
-      this.__fetchPost();
+      this.props.fetchActivePost(this.__getPostProperty("id"));
     }
   }
 
-  __fetchPost() {
-    postsApi.fetchPost(this.__getPostProperty('id'))
-      .then(post => {
-        this.__changePostProperties({
-          title: post.title,
-          body: post.body,
-          authorId: post.userId,
-        });
-      })
-      .catch(console.log);
+  componentWillReceiveProps(nextProps) {
+    if (this.__isPostFetchSuccess(nextProps)) {
+      this.__changePostProperties({...nextProps.activePost.item});
+    } else if (this.__isPostFetchFailure(nextProps)) {
+      this.__displayPostFetchErrorMessage();
+    } else if (this.__isPostUpdateFailure(nextProps)) {
+      this.__displayPostUpdateErrorMessage();
+    } else if (this.__isPostUpdateSuccess(nextProps)) {
+      this.__returnToHomepage();
+    }
+  }
+
+  __isPostFetchSuccess(nextProps) {
+    return (
+      this.props.activePost.fetch.pending &&
+      !nextProps.activePost.fetch.pending &&
+      nextProps.activePost.fetch.success
+    );
+  }
+
+  __isPostFetchFailure(nextProps) {
+    return (
+      this.props.activePost.fetch.pending &&
+      !nextProps.activePost.fetch.pending &&
+      nextProps.activePost.fetch.failure
+    );
+  }
+
+  __isPostUpdateFailure(nextProps) {
+    return (
+      this.props.posts.update.pending &&
+      !nextProps.posts.update.pending &&
+      nextProps.posts.update.failure
+    );
+  }
+
+  __isPostUpdateSuccess(nextProps) {
+    return (
+      this.props.posts.update.pending &&
+      !nextProps.posts.update.pending &&
+      nextProps.posts.update.success
+    );
   }
 
   __updatePost() {
-    return postsApi.updatePost(this.__getPostProperty('id'), this.__getPostData());
+    this.props.updatePost(this.__getPostData());
   }
 
   __addPost() {
-    return postsApi.addPost(this.__getPostData());
+    this.props.addPost(this.__getPostData());
   }
 
   __getPostData() {
@@ -74,9 +111,7 @@ class PostDetail extends React.Component {
   }
 
   __onInputChange(event) {
-    console.log(event.target);
     this.__changePostProperties({ [event.target.name]: event.target.value });
-    console.log(this.state.post);
   }
 
   __onSubmit(event) {
@@ -85,12 +120,10 @@ class PostDetail extends React.Component {
     if (this.__getValidationError()) return false;
 
     if (this.__getPostProperty("id")) {
-      this.__updatePost().then(console.log);
+      this.__updatePost();
     } else {
-      this.__addPost().then(console.log);
+      this.__addPost();
     }
-
-    this.__returnToHomepage();
   }
 
   __returnToHomepage() {
@@ -120,29 +153,61 @@ class PostDetail extends React.Component {
   }
 
   __hideValidationMessage() {
-    this.setState({
-      validation: {
-        ...this.state.validation,
-        message: '',
-        isMessageDisplayed: false,
-      },
-    });
+    this.__hideModal();
   }
 
   __displayValidationMessage(message) {
+    this.__showModal(
+      message,
+      'Validation Error',
+      [ { label: "ok", callback: e => this.__hideValidationMessage() } ],
+    );
+  }
+
+  __displayPostFetchErrorMessage() {
+    this.__showModal(
+      'Encountered error when fetching post data.',
+      'Error',
+      [ { label: "ok", callback: e => this.__hideValidationMessage() } ],
+    );
+  }
+
+  __displayPostUpdateErrorMessage() {
+    this.__showModal(
+      'Encountered error when updating post data.',
+      'Error',
+      [ { label: "ok", callback: e => this.__hideValidationMessage() } ],
+    );
+  }
+
+  __showModal(message, header, buttons) {
     this.setState({
-      validation: {
-        ...this.state.validation,
+      modal: {
+        ...this.state.modal,
+        isDisplayed: true,
         message,
-        isMessageDisplayed: true,
+        header,
+        buttons,
+      }
+    });
+  }
+
+  __hideModal() {
+    this.setState({
+      modal: {
+        ...this.state.modal,
+        isDisplayed: false,
+        message: '',
+        buttons: [],
+        header: '',
       },
     });
   }
 
-  __getFormSection() {
+  __renderFormSection() {
     const header = this.__getPostProperty("id") ? "Edit Post" : "Add Post";
     return (
-      <div>
+      <div id='PostForm'>
         <h3>{ header }</h3>
         <div className='form-group'>
           <form onSubmit={ e => this.__onSubmit(e) }>
@@ -154,6 +219,7 @@ class PostDetail extends React.Component {
                 placeholder='Title'
                 onChange={ e => this.__onInputChange(e) }
                 value={ this.__getPostProperty('title') }
+                required
               />
             </div>
             <div className='form-group'>
@@ -164,6 +230,7 @@ class PostDetail extends React.Component {
                 rows='5'
                 onChange={ e => this.__onInputChange(e) }
                 value={ this.__getPostProperty('body') }
+                required
               />
             </div>
             <div className='form-group'>
@@ -198,7 +265,7 @@ class PostDetail extends React.Component {
     return options;
   }
 
-  __getCommentsSection() {
+  __renderCommentsSection() {
     if (!this.__getPostProperty("id")) return;
 
     return (
@@ -211,18 +278,18 @@ class PostDetail extends React.Component {
     );
   }
 
-  __getBreadcrumbs() {
+  __renderBreadcrumbs() {
     return ( <Breadcrumbs links={ this.__getBreadcrumbsLinks() } /> );
   }
 
-  __getModal() {
+  __renderModal() {
     return (
       <Modal
-        isDisplayed={ this.state.validation.isMessageDisplayed }
-        buttons={ [ { label: "ok", callback: e => this.__hideValidationMessage() } ] }
-        header={ "Validation error" }
+        isDisplayed={ this.state.modal.isDisplayed }
+        header={ this.state.modal.header }
+        buttons={ this.state.modal.buttons }
       >
-        { this.state.validation.message }
+        { this.state.modal.message }
       </Modal>
     );
   }
@@ -230,13 +297,28 @@ class PostDetail extends React.Component {
   render() {
     return (
       <div className='PostDetail'>
-        { this.__getBreadcrumbs() }
-        { this.__getFormSection() }
-        { this.__getCommentsSection() }
-        { this.__getModal() }
+        { this.__renderBreadcrumbs() }
+        { this.__renderFormSection() }
+        { this.__renderCommentsSection() }
+        { this.__renderModal() }
       </div>
     );
   }
 }
 
-export default PostDetail;
+function mapStateToProps(state) {
+  return {
+    posts: state.posts,
+    activePost: state.activePost,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    addPost: (post) => dispatch(addPost(post, dispatch)),
+    updatePost: (post) => dispatch(updatePost(post, dispatch)),
+    fetchActivePost: (id) => dispatch(fetchActivePost(id, dispatch)),
+  };
+}
+
+export default authorize(connect(mapStateToProps, mapDispatchToProps)(PostDetail));
