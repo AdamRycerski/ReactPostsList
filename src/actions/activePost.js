@@ -1,10 +1,14 @@
 import { postsApi } from '../PostsAPI';
+import { displayError } from './displayedError';
 
 export const FETCH_ACTIVE_POST = 'FETCH_ACTIVE_POST';
 export function fetchActivePost(id, dispatch) {
   postsApi.fetchPost(id).then(
     post => dispatch(receiveActivePost(post)),
-    () => dispatch(invalidateActivePost()),
+    () => {
+      dispatch(invalidateActivePost());
+      dispatch(displayError({ message: 'Encountered error fetching post.' }));
+    },
   );
 
   return {

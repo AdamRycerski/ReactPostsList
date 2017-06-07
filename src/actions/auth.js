@@ -1,11 +1,15 @@
 import { loginApi } from '../LoginAPI';
 import { AUTH_TOKEN } from '../config';
+import { displayError } from './displayedError';
 
  export const REQUEST_USER_LOGIN = 'REQUEST_USER_LOGIN';
  export function requestUserLogin(credentials, dispatch) {
   loginApi.login(credentials.login, credentials.password).then(
     res => dispatch(acceptUserLogin(res.token)),
-    status => dispatch(rejectUserLogin(status)),
+    status => {
+      dispatch(rejectUserLogin(status));
+      dispatch(displayError({ message: 'Encountered error logging in.' }));
+    },
   );
 
   return {

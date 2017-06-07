@@ -1,10 +1,14 @@
 import { loginApi } from '../LoginAPI';
+import { displayError } from './displayedError';
 
 export const FETCH_ACTIVE_USER_DATA = 'FETCH_ACTIVE_USER_DATA';
 export function fetchActiveUserData(token, dispatch) {
   loginApi.fetchUserData(token).then(
     data => dispatch(receiveActiveUserData(data)),
-    () => dispatch(invalidateActiveUserData()),
+    () => {
+      dispatch(invalidateActiveUserData());
+      dispatch(displayError({ message: 'Encountered error fetching ser data.' }));
+    }
   );
 
   return {

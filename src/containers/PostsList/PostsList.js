@@ -9,6 +9,7 @@ import List from '../../components/List/List';
 import { Modal, ModalState } from '../../components/Modal/Modal';
 
 import { fetchPosts, requestPostDelete } from '../../actions/posts';
+import { hideError } from '../../actions/displayedError';
 
 class PostsList extends React.Component {
   static propTypes = {
@@ -37,12 +38,6 @@ class PostsList extends React.Component {
 
   componentDidMount() {
     this.__fetchPosts();
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (!this.props.posts.deletion.failure && nextProps.posts.deletion.failure) {
-      this.__showDeleteErrorModal();
-    }
   }
 
   __filter(posts) {
@@ -98,20 +93,6 @@ class PostsList extends React.Component {
     });
   }
 
-  __showDeleteErrorModal() {
-    this.__showModal(
-      "Encountered error while deleting post.",
-      "Error",
-      this.__getPostDeleteErrorModalButtons(),
-    );
-  }
-
-  __getPostDeleteErrorModalButtons() {
-    return [
-      { label: "Ok", callback: () => this.__hideModal() },
-    ];
-  }
-
   __onPostDeleteClick(id) {
     this.__showPostDeleteConfirmModal(id);
   }
@@ -164,6 +145,7 @@ function mapStateToProps(state) {
   return {
     posts: state.posts,
     activeUserId: state.activeUser.id,
+    displayedError: state.displayedError,
   };
 }
 
@@ -171,6 +153,7 @@ function mapDispatchToProps(dispatch) {
   return {
     fetchPosts: () => dispatch(fetchPosts(dispatch)),
     requestPostDelete: (id) => dispatch(requestPostDelete(id, dispatch)),
+    hideError: () => dispatch(hideError()),
   };
 }
 

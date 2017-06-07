@@ -1,12 +1,14 @@
-import {
-  loginApi,
-} from '../LoginAPI';
+import { loginApi } from '../LoginAPI';
+import { displayError } from './displayedError';
 
 export const FETCH_AUTHORS = 'FETCH_AUTHORS';
 export function fetchAuthors(dispatch) {
   loginApi.fetchAuthors().then(
     authors => dispatch(receiveAuthors(authors)),
-    e => dispatch(invalidateAuthors()),
+    e => {
+      dispatch(invalidateAuthors());
+      dispatch(displayError({ message: 'Encountered error fetching authors' }));
+    },
   );
 
   return {

@@ -1,10 +1,14 @@
 import { postsApi } from '../PostsAPI';
+import { displayError } from './displayedError';
 
 export const FETCH_POSTS = 'FETCH_POST';
 export function fetchPosts(dispatch) {
   postsApi.fetchPosts().then(
     posts => dispatch(receivePosts(posts)),
-    status => dispatch(invalidatePosts(status)),
+    status => {
+      dispatch(invalidatePosts(status));
+      dispatch(displayError({ message: 'Encountered error fetching post' }));
+    },
   );
 
   return {
@@ -35,7 +39,10 @@ export const ADD_POST = "ADD_POST";
 export function addPost(post, dispatch) {
   postsApi.addPost(post).then(
     res => dispatch(receivePost({ ...post, ...res })),
-    status => dispatch(invalidatePost(status)),
+    status => {
+      dispatch(invalidatePost(status));
+      dispatch(displayError({ message: 'Encountered error adding post.' }));
+    },
   );
 
   return {
@@ -48,7 +55,10 @@ export const UPDATE_POST = "UPDATE_POST";
 export function updatePost(post, dispatch) {
   postsApi.updatePost(post.id, post).then(
     res => dispatch(receivePost({ ...post, ...res })),
-    status => dispatch(invalidatePost(status)),
+    status => {
+      dispatch(invalidatePost(status));
+      dispatch(displayError({ message: 'Encountered error updating post.' }));
+    },
   );
 
   return {
@@ -79,7 +89,10 @@ export const REQUEST_POST_DELETE = "REQUEST_POST_DELETE";
 export function requestPostDelete(id, dispatch) {
   postsApi.deletePost(id).then(
     () => dispatch(deletePost(id)),
-    () => dispatch(invalidatePostDelete()),
+    () => {
+      dispatch(invalidatePostDelete());
+      dispatch(displayError({ message: 'Encountered error deleting post.' }));
+    },
   );
 
   return {

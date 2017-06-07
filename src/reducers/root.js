@@ -5,6 +5,7 @@ import activePostReducer from './activePost';
 import activeUserReducer from './activeUser';
 import authReducer from './auth';
 import authorsReducer from './authors';
+import displayedErrorReducer from './displayedError';
 
 export default combineReducers({
   posts: postsReducer,
@@ -12,4 +13,5 @@ export default combineReducers({
   activeUser: activeUserReducer,
   auth: authReducer,
   authors: authorsReducer,
+  displayedError: displayedErrorReducer,
 });

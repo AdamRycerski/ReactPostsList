@@ -12,6 +12,7 @@ import { authorize } from '../Authorize/Authorize';
 import { addPost, updatePost } from '../../actions/posts';
 import { fetchActivePost } from '../../actions/activePost';
 import { fetchAuthors } from '../../actions/authors';
+import { hideError } from '../../actions/displayedError';
 
 
 class PostDetail extends React.Component {
@@ -37,13 +38,15 @@ class PostDetail extends React.Component {
     this.props.fetchAuthors();
   }
 
+  componentDidUpdate() {
+    if(this.props.displayedError.isDisplayed) {
+      this.__displayErrorMessage();
+    }
+  }
+
   componentWillReceiveProps(nextProps) {
     if (this.__isPostFetchSuccess(nextProps)) {
       this.__changePostProperties({...nextProps.activePost.item});
-    } else if (this.__isPostFetchFailure(nextProps)) {
-      this.__displayPostFetchErrorMessage();
-    } else if (this.__isPostUpdateFailure(nextProps)) {
-      this.__displayPostUpdateErrorMessage();
     } else if (this.__isPostUpdateSuccess(nextProps)) {
       this.__returnToHomepage();
     }
@@ -61,22 +64,6 @@ class PostDetail extends React.Component {
     );
   }
 
-  __isPostFetchFailure(nextProps) {
-    return (
-      this.props.activePost.fetch.pending &&
-      !nextProps.activePost.fetch.pending &&
-      nextProps.activePost.fetch.failure
-    );
-  }
-
-  __isPostUpdateFailure(nextProps) {
-    return (
-      this.props.posts.update.pending &&
-      !nextProps.posts.update.pending &&
-      nextProps.posts.update.failure
-    );
-  }
-
   __isPostUpdateSuccess(nextProps) {
     return (
       this.props.posts.update.pending &&
@@ -91,14 +78,6 @@ class PostDetail extends React.Component {
       !nextProps.authors.fetch.pending &&
       nextProps.authors.fetch.failure
     );
-  }
-
-  __updatePost() {
-    this.props.updatePost(this.__getPostData());
-  }
-
-  __addPost() {
-    this.props.addPost(this.__getPostData());
   }
 
   __getPostData() {
@@ -125,12 +104,14 @@ class PostDetail extends React.Component {
   __onSubmit(event) {
     event.preventDefault();
 
-    if (this.__getValidationError()) return false;
+    if (this.__getValidationError()) {
+      return false;
+    }
 
     if (this.__getPostProperty("id")) {
-      this.__updatePost();
+      this.props.updatePost(this.__getPostData());
     } else {
-      this.__addPost();
+      this.props.addPost(this.__getPostData());
     }
   }
 
@@ -144,9 +125,7 @@ class PostDetail extends React.Component {
       this.__getPostProperty('body') === '' ||
       Number(this.__getPostProperty('authorId')) === -1
     ) {
-      const errorMessage = 'All fields must be filled out.';
-      this.__displayValidationMessage(errorMessage);
-      return errorMessage;
+      return 'All fields must be filled out.';
     }
   }
 
@@ -172,27 +151,19 @@ class PostDetail extends React.Component {
     );
   }
 
-  __displayPostFetchErrorMessage() {
-    this.__showModal(
-      'Encountered error when fetching post data.',
-      'Error',
-      [ { label: "ok", callback: e => this.__hideValidationMessage() } ],
-    );
-  }
-
-  __displayPostUpdateErrorMessage() {
-    this.__showModal(
-      'Encountered error when updating post data.',
-      'Error',
-      [ { label: "ok", callback: e => this.__hideValidationMessage() } ],
-    );
-  }
-
   __displayAuthorsFetchErrorMessage() {
     this.__showModal(
       'Encountered error when fetching authors list.',
       'Error',
       [ { label: "ok", callback: e => this.__hideValidationMessage() } ],
+    );
+  }
+
+  __displayErrorMessage() {
+    this.__showModal(
+      this.props.displayedError.message,
+      this.props.displayedError.title,
+      [ { label: "ok", callback: e => this.props.hideError() } ],
     );
   }
 
@@ -211,7 +182,7 @@ class PostDetail extends React.Component {
   __renderFormSection() {
     const header = this.__getPostProperty("id") ? "Edit Post" : "Add Post";
     return (
-      <div id='PostForm'>
+      <div id="PostForm">
         <h3>{ header }</h3>
         <div className='form-group'>
           <form onSubmit={ e => this.__onSubmit(e) }>
@@ -270,7 +241,9 @@ class PostDetail extends React.Component {
   }
 
   __renderCommentsSection() {
-    if (!this.__getPostProperty("id")) return;
+    if (!this.__getPostProperty("id")) {
+      return;
+    }
 
     return (
       <div>
@@ -309,6 +282,7 @@ function mapStateToProps(state) {
     posts: state.posts,
     activePost: state.activePost,
     authors: state.authors,
+    displayedError: state.displayedError,
   };
 }
 
@@ -318,6 +292,7 @@ function mapDispatchToProps(dispatch) {
     updatePost: (post) => dispatch(updatePost(post, dispatch)),
     fetchActivePost: (id) => dispatch(fetchActivePost(id, dispatch)),
     fetchAuthors: () => dispatch(fetchAuthors(dispatch)),
+    hideError: () => dispatch(hideError()),
   };
 }
 
