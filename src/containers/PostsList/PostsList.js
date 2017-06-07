@@ -40,6 +40,22 @@ class PostsList extends React.Component {
     this.__fetchPosts();
   }
 
+  componentWillReceiveProps(nextProps) {
+    this.__handleDisplayedError(nextProps);
+  }
+
+  __handleDisplayedError(nextProps) {
+    if (!this.props.displayedError.isDisplayed && nextProps.displayedError.isDisplayed) {
+      this.__showModal(
+        nextProps.displayedError.message,
+        nextProps.displayedError.title,
+        [ { label: "ok", callback: e => this.props.hideError() } ],
+      );
+    } else if (this.props.displayedError.isDisplayed && !nextProps.displayedError.isDisplayed) {
+      this.__hideModal();
+    }
+  }
+
   __filter(posts) {
     const { phrase, maxLength } = this.props.filter;
 
@@ -91,6 +107,14 @@ class PostsList extends React.Component {
     this.setState({
       modal: ModalState.hide(),
     });
+  }
+
+  __displayErrorMessage() {
+    this.__showModal(
+      this.props.displayedError.message,
+      this.props.displayedError.title,
+      [ { label: "ok", callback: e => this.props.hideError() } ],
+    );
   }
 
   __onPostDeleteClick(id) {

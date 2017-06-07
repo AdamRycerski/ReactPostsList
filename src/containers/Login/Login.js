@@ -7,6 +7,7 @@ import { Modal, ModalState } from '../../components/Modal/Modal';
 
 import { fetchActiveUserData } from '../../actions/activeUser';
 import { requestUserLogin } from '../../actions/auth';
+import { hideError } from '../../actions/displayedError';
 
 class Login extends React.Component {
   constructor(props) {
@@ -20,19 +21,23 @@ class Login extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.__wasLoginFailed(nextProps)) {
-      this.__handleReject(401);
-    } else if (this.__wasLoginSuccessful(nextProps)) {
+    this.__handleDisplayedError(nextProps);
+
+    if (this.__wasLoginSuccessful(nextProps)) {
       this.__handleSuccess(nextProps.auth.token);
     }
   }
 
-  __wasLoginFailed(nextProps) {
-    return (
-      this.props.auth.login.pending &&
-      !nextProps.auth.login.pending &&
-      nextProps.auth.login.failure
-    );
+  __handleDisplayedError(nextProps) {
+    if (!this.props.displayedError.isDisplayed && nextProps.displayedError.isDisplayed) {
+      this.__showModal(
+        nextProps.displayedError.message,
+        nextProps.displayedError.title,
+        [ { label: "ok", callback: e => this.props.hideError() } ],
+      );
+    } else if (this.props.displayedError.isDisplayed && !nextProps.displayedError.isDisplayed) {
+      this.__hideModal();
+    }
   }
 
   __wasLoginSuccessful(nextProps) {
@@ -137,6 +142,7 @@ class Login extends React.Component {
 function mapStateToProps(state) {
   return {
     auth: state.auth,
+    displayedError: state.displayedError,
   };
 }
 
@@ -144,6 +150,7 @@ function mapDispatchToProps(dispatch) {
   return {
     fetchActiveUserData: (token) => dispatch(fetchActiveUserData(token, dispatch)),
     requestUserLogin: (credentials) => dispatch(requestUserLogin(credentials, dispatch)),
+    hideError: () => dispatch(hideError()),
   };
 }
 

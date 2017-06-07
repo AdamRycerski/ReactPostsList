@@ -38,21 +38,25 @@ class PostDetail extends React.Component {
     this.props.fetchAuthors();
   }
 
-  componentDidUpdate() {
-    if(this.props.displayedError.isDisplayed) {
-      this.__displayErrorMessage();
-    }
-  }
-
   componentWillReceiveProps(nextProps) {
+    this.__handleDisplayedError(nextProps);
+
     if (this.__isPostFetchSuccess(nextProps)) {
       this.__changePostProperties({...nextProps.activePost.item});
     } else if (this.__isPostUpdateSuccess(nextProps)) {
       this.__returnToHomepage();
     }
+  }
 
-    if (this.__isAuthorsFetchFailure(nextProps)) {
-      this.__displayAuthorsFetchErrorMessage();
+  __handleDisplayedError(nextProps) {
+    if (!this.props.displayedError.isDisplayed && nextProps.displayedError.isDisplayed) {
+      this.__showModal(
+        nextProps.displayedError.message,
+        nextProps.displayedError.title,
+        [ { label: "ok", callback: e => this.props.hideError() } ],
+      );
+    } else if (this.props.displayedError.isDisplayed && !nextProps.displayedError.isDisplayed) {
+      this.__hideModal();
     }
   }
 
@@ -156,14 +160,6 @@ class PostDetail extends React.Component {
       'Encountered error when fetching authors list.',
       'Error',
       [ { label: "ok", callback: e => this.__hideValidationMessage() } ],
-    );
-  }
-
-  __displayErrorMessage() {
-    this.__showModal(
-      this.props.displayedError.message,
-      this.props.displayedError.title,
-      [ { label: "ok", callback: e => this.props.hideError() } ],
     );
   }
 
