@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router';
 
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 
 import './Post.scss';
 
@@ -9,6 +10,7 @@ class Post extends React.Component {
   static defaultProps = {
     title: '',
     body: '',
+    highlight: false,
   }
 
   static propTypes = {
@@ -16,7 +18,8 @@ class Post extends React.Component {
     title: PropTypes.string,
     body: PropTypes.string,
     id: PropTypes.any.isRequired,
-  }
+    highlight: PropTypes.bool,
+  };
 
   constructor(props) {
     super(props);
@@ -32,7 +35,7 @@ class Post extends React.Component {
 
   render() {
     return (
-      <div className='Post well'>
+      <div className={ classNames('Post well', { Highlight: this.props.highlight }) }>
         <div>
           <h3> { this.state.title } </h3>
           <p className='text-justify'> { this.state.body } </p>

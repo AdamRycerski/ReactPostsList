@@ -1,14 +1,18 @@
 import React from 'react';
 import { Link }from 'react-router';
+import { connect } from 'react-redux';
 
 import './PostDetail.scss';
 
 import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
-import Modal from '../../components/Modal/Modal';
-import CommentsList from '../CommentsList/CommentsList'
+import { Modal, ModalState } from '../../components/Modal/Modal';
+import CommentsList from '../CommentsList/CommentsList';
+import { authorize } from '../Authorize/Authorize';
 
-import users from '../../usersMock';
-import { postsApi } from '../../PostsAPI';
+import { addPost, updatePost } from '../../actions/posts';
+import { fetchActivePost } from '../../actions/activePost';
+import { fetchAuthors } from '../../actions/authors';
+import { hideError } from '../../actions/displayedError';
 
 
 class PostDetail extends React.Component {
@@ -17,10 +21,7 @@ class PostDetail extends React.Component {
 
     this.state = {
       isPostNew: this.props.isPostNew,
-      validation: {
-        isMessageDisplayed: false,
-        message: '',
-      },
+      modal: ModalState.hide(),
       post: {
         id: Number(this.props.params.id),
         title: '',
@@ -32,28 +33,55 @@ class PostDetail extends React.Component {
 
   componentDidMount() {
     if (this.__getPostProperty("id")) {
-      this.__fetchPost();
+      this.props.fetchActivePost(this.__getPostProperty("id"));
+    }
+    this.props.fetchAuthors();
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.__handleDisplayedError(nextProps);
+
+    if (this.__isPostFetchSuccess(nextProps)) {
+      this.__changePostProperties({...nextProps.activePost.item});
+    } else if (this.__isPostUpdateSuccess(nextProps)) {
+      this.__returnToHomepage();
     }
   }
 
-  __fetchPost() {
-    postsApi.fetchPost(this.__getPostProperty('id'))
-      .then(post => {
-        this.__changePostProperties({
-          title: post.title,
-          body: post.body,
-          authorId: post.userId,
-        });
-      })
-      .catch(console.log);
+  __handleDisplayedError(nextProps) {
+    if (!this.props.displayedError.isDisplayed && nextProps.displayedError.isDisplayed) {
+      this.__showModal(
+        nextProps.displayedError.message,
+        nextProps.displayedError.title,
+        [ { label: "ok", callback: e => this.props.hideError() } ],
+      );
+    } else if (this.props.displayedError.isDisplayed && !nextProps.displayedError.isDisplayed) {
+      this.__hideModal();
+    }
   }
 
-  __updatePost() {
-    return postsApi.updatePost(this.__getPostProperty('id'), this.__getPostData());
+  __isPostFetchSuccess(nextProps) {
+    return (
+      this.props.activePost.fetch.pending &&
+      !nextProps.activePost.fetch.pending &&
+      nextProps.activePost.fetch.success
+    );
   }
 
-  __addPost() {
-    return postsApi.addPost(this.__getPostData());
+  __isPostUpdateSuccess(nextProps) {
+    return (
+      this.props.posts.update.pending &&
+      !nextProps.posts.update.pending &&
+      nextProps.posts.update.success
+    );
+  }
+
+  __isAuthorsFetchFailure(nextProps) {
+    return (
+      this.props.authors.fetch.pending &&
+      !nextProps.authors.fetch.pending &&
+      nextProps.authors.fetch.failure
+    );
   }
 
   __getPostData() {
@@ -74,23 +102,21 @@ class PostDetail extends React.Component {
   }
 
   __onInputChange(event) {
-    console.log(event.target);
     this.__changePostProperties({ [event.target.name]: event.target.value });
-    console.log(this.state.post);
   }
 
   __onSubmit(event) {
     event.preventDefault();
 
-    if (this.__getValidationError()) return false;
-
-    if (this.__getPostProperty("id")) {
-      this.__updatePost().then(console.log);
-    } else {
-      this.__addPost().then(console.log);
+    if (this.__getValidationError()) {
+      return false;
     }
 
-    this.__returnToHomepage();
+    if (this.__getPostProperty("id")) {
+      this.props.updatePost(this.__getPostData());
+    } else {
+      this.props.addPost(this.__getPostData());
+    }
   }
 
   __returnToHomepage() {
@@ -103,9 +129,7 @@ class PostDetail extends React.Component {
       this.__getPostProperty('body') === '' ||
       Number(this.__getPostProperty('authorId')) === -1
     ) {
-      const errorMessage = 'All fields must be filled out.';
-      this.__displayValidationMessage(errorMessage);
-      return errorMessage;
+      return 'All fields must be filled out.';
     }
   }
 
@@ -120,29 +144,41 @@ class PostDetail extends React.Component {
   }
 
   __hideValidationMessage() {
-    this.setState({
-      validation: {
-        ...this.state.validation,
-        message: '',
-        isMessageDisplayed: false,
-      },
-    });
+    this.__hideModal();
   }
 
   __displayValidationMessage(message) {
+    this.__showModal(
+      message,
+      'Validation Error',
+      [ { label: "ok", callback: e => this.__hideValidationMessage() } ],
+    );
+  }
+
+  __displayAuthorsFetchErrorMessage() {
+    this.__showModal(
+      'Encountered error when fetching authors list.',
+      'Error',
+      [ { label: "ok", callback: e => this.__hideValidationMessage() } ],
+    );
+  }
+
+  __showModal(message, header, buttons) {
     this.setState({
-      validation: {
-        ...this.state.validation,
-        message,
-        isMessageDisplayed: true,
-      },
+      modal: ModalState.display(header, message, buttons),
     });
   }
 
-  __getFormSection() {
+  __hideModal() {
+    this.setState({
+      modal: ModalState.hide(),
+    });
+  }
+
+  __renderFormSection() {
     const header = this.__getPostProperty("id") ? "Edit Post" : "Add Post";
     return (
-      <div>
+      <div id="PostForm">
         <h3>{ header }</h3>
         <div className='form-group'>
           <form onSubmit={ e => this.__onSubmit(e) }>
@@ -154,6 +190,7 @@ class PostDetail extends React.Component {
                 placeholder='Title'
                 onChange={ e => this.__onInputChange(e) }
                 value={ this.__getPostProperty('title') }
+                required
               />
             </div>
             <div className='form-group'>
@@ -164,11 +201,12 @@ class PostDetail extends React.Component {
                 rows='5'
                 onChange={ e => this.__onInputChange(e) }
                 value={ this.__getPostProperty('body') }
+                required
               />
             </div>
             <div className='form-group'>
               <label>Specify post author:</label>
-                { this.__getUserRadios(users) }
+                { this.__getUserRadios(Object.values(this.props.authors.authors)) }
               </div>
             <Link to='/' className='btn btn-default'>Cancel</Link>
             <button type='submit' className='btn btn-default'>Save</button>
@@ -190,7 +228,7 @@ class PostDetail extends React.Component {
               onChange={ e => this.__onInputChange(e) }
               checked={ Number(user.id) === Number(this.__getPostProperty("authorId")) }
             />
-            { user.name }
+            { `${user.firstName} ${user.lastName}` }
           </label>
         </div>
       );
@@ -198,8 +236,10 @@ class PostDetail extends React.Component {
     return options;
   }
 
-  __getCommentsSection() {
-    if (!this.__getPostProperty("id")) return;
+  __renderCommentsSection() {
+    if (!this.__getPostProperty("id")) {
+      return;
+    }
 
     return (
       <div>
@@ -211,32 +251,45 @@ class PostDetail extends React.Component {
     );
   }
 
-  __getBreadcrumbs() {
+  __renderBreadcrumbs() {
     return ( <Breadcrumbs links={ this.__getBreadcrumbsLinks() } /> );
   }
 
-  __getModal() {
+  __renderModal() {
     return (
-      <Modal
-        isDisplayed={ this.state.validation.isMessageDisplayed }
-        buttons={ [ { label: "ok", callback: e => this.__hideValidationMessage() } ] }
-        header={ "Validation error" }
-      >
-        { this.state.validation.message }
-      </Modal>
+      <Modal { ...this.state.modal.getProps() } />
     );
   }
 
   render() {
     return (
       <div className='PostDetail'>
-        { this.__getBreadcrumbs() }
-        { this.__getFormSection() }
-        { this.__getCommentsSection() }
-        { this.__getModal() }
+        { this.__renderBreadcrumbs() }
+        { this.__renderFormSection() }
+        { this.__renderCommentsSection() }
+        { this.__renderModal() }
       </div>
     );
   }
 }
 
-export default PostDetail;
+function mapStateToProps(state) {
+  return {
+    posts: state.posts,
+    activePost: state.activePost,
+    authors: state.authors,
+    displayedError: state.displayedError,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    addPost: (post) => dispatch(addPost(post, dispatch)),
+    updatePost: (post) => dispatch(updatePost(post, dispatch)),
+    fetchActivePost: (id) => dispatch(fetchActivePost(id, dispatch)),
+    fetchAuthors: () => dispatch(fetchAuthors(dispatch)),
+    hideError: () => dispatch(hideError()),
+  };
+}
+
+export default authorize(connect(mapStateToProps, mapDispatchToProps)(PostDetail));
