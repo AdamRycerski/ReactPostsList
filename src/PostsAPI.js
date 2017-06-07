@@ -1,4 +1,5 @@
 import { postsApiUrl } from "./config";
+import { fetchApi } from './FetchAPI';
 
 class PostsAPI {
   constructor(url) {
@@ -6,73 +7,55 @@ class PostsAPI {
   }
 
   fetchPost(id) {
-    return fetch(this.__getPostUrl(id))
-      .then((res) => { return this.__handleResponse(res) });
+    return fetchApi.fetchJson({ url: this.__getPostUrl(id) });
   }
 
   updatePost(id, data) {
-    let request = this.__createRequestData("PUT", this.__getUpdatePostRequestBody(data));
-    return fetch(this.__getPostUrl(id), request)
-      .then((res) => { return this.__handleResponse(res); })
+    return fetchApi.fetchJson({
+      url: this.__getPostUrl(id),
+      method: 'PUT',
+      data: this.__getUpdatePostRequestData(data),
+    })
   }
 
   deletePost(id) {
-    let request = this.__createRequestData("DELETE");
-    return fetch(this.__getPostUrl(id), request)
-      .then((res) => { return this.__handleResponse(res); });
+    return fetchApi.fetchJson({
+      url: this.__getPostUrl(id),
+      method: 'DELETE',
+    })
   }
 
   fetchPosts() {
-    return fetch(this.url)
-      .then((res) => { return this.__handleResponse(res) });
+    return fetchApi.fetchJson({ url: this.url });
   }
 
   fetchComments(id) {
-    return fetch(`${this.__getPostUrl(id)}/comments`)
-      .then((res) => { return this.__handleResponse(res) });
+    return fetchApi.fetchJson({ url: `${this.__getPostUrl(id)}/comments` })
   }
 
   addPost(postData) {
-    let request = this.__createRequestData("POST", this.__getAddPostRequestBody(postData));
-    return fetch(this.url, request)
-      .then((res) => { return this.__handleResponse(res); });
+    return fetchApi.fetchJson({
+      url: this.url,
+      method: 'POST',
+      data: this.__getAddPostRequestData(postData),
+    })
   }
 
-  __getUpdatePostRequestBody(postData) {
-    return this.__getQueryString({
+  __getUpdatePostRequestData(postData) {
+    return {
       title: postData.title,
       body: postData.body,
       userId: postData.authorId,
       id: postData.id,
-    });
+    };
   }
 
-  __getQueryString(data) {
-    return Object.keys(data).reduce((acc, key) => {
-      key = encodeURIComponent(key);
-      let value = encodeURIComponent(data[key]);
-      return `${acc}&${key}=${value}`;
-    }, "").substr(1);
-  }
-
-  __getAddPostRequestBody(postData) {
-    return this.__getQueryString({
+  __getAddPostRequestData(postData) {
+    return {
       title: postData.title,
       body: postData.body,
       userId: postData.authorId,
-    });
-  }
-
-  __createRequestData(method, body = {}) {
-    return { method , body };
-  }
-
-  __handleResponse(res) {
-    if (res.ok) {
-      return res.json();
-    } else {
-      throw res.status;
-    }
+    };
   }
 
   __getPostUrl(id) {
