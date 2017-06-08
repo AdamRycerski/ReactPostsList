@@ -13,6 +13,7 @@ import { addPost, updatePost } from '../../actions/posts';
 import { fetchActivePost } from '../../actions/activePost';
 import { fetchAuthors } from '../../actions/authors';
 import { hideError } from '../../actions/displayedError';
+import { submitForm } from '../../actions/validation';
 
 
 class PostDetail extends React.Component {
@@ -108,15 +109,29 @@ class PostDetail extends React.Component {
   __onSubmit(event) {
     event.preventDefault();
 
+    /*
     if (this.__getValidationError()) {
       return false;
     }
 
+    let submit;
     if (this.__getPostProperty("id")) {
-      this.props.updatePost(this.__getPostData());
+      submit = () => this.props.updatePost(this.__getPostData());
     } else {
-      this.props.addPost(this.__getPostData());
+      submit = () => this.props.addPost(this.__getPostData());
     }
+    */
+
+    const submit = (
+      this.__getPostProperty('id') ?
+      () => this.props.updatePost(this.__getPostData()) :
+      () => this.props.addPost(this.__getPostData())
+    );
+
+    this.props.submitForm(
+      () => this.__validateInputs(),
+      submit,
+    )
   }
 
   __returnToHomepage() {
@@ -143,26 +158,6 @@ class PostDetail extends React.Component {
     ];
   }
 
-  __hideValidationMessage() {
-    this.__hideModal();
-  }
-
-  __displayValidationMessage(message) {
-    this.__showModal(
-      message,
-      'Validation Error',
-      [ { label: "ok", callback: e => this.__hideValidationMessage() } ],
-    );
-  }
-
-  __displayAuthorsFetchErrorMessage() {
-    this.__showModal(
-      'Encountered error when fetching authors list.',
-      'Error',
-      [ { label: "ok", callback: e => this.__hideValidationMessage() } ],
-    );
-  }
-
   __showModal(message, header, buttons) {
     this.setState({
       modal: ModalState.display(header, message, buttons),
@@ -175,13 +170,29 @@ class PostDetail extends React.Component {
     });
   }
 
+  __validateInputs() {
+    const errors = {};
+
+    if (!/\w+/.test(this.__getPostProperty('title'))) {
+      errors.title = 'Title must be specified.';
+    }
+    if (!/\w+/.test(this.__getPostProperty('body'))) {
+      errors.body = 'Body must not be empty.';
+    }
+    if (this.__getPostProperty('authorId') === -1) {
+      errors.authorId = 'Author must be selected.';
+    }
+
+    return errors;
+  }
+
   __renderFormSection() {
     const header = this.__getPostProperty("id") ? "Edit Post" : "Add Post";
     return (
       <div id="PostForm">
         <h3>{ header }</h3>
         <div className='form-group'>
-          <form onSubmit={ e => this.__onSubmit(e) }>
+          <form name='PostDetailForm' onSubmit={ e => this.__onSubmit(e) }>
             <div className='form-group'>
               <input
                 type='text'
@@ -190,7 +201,6 @@ class PostDetail extends React.Component {
                 placeholder='Title'
                 onChange={ e => this.__onInputChange(e) }
                 value={ this.__getPostProperty('title') }
-                required
               />
             </div>
             <div className='form-group'>
@@ -201,15 +211,14 @@ class PostDetail extends React.Component {
                 rows='5'
                 onChange={ e => this.__onInputChange(e) }
                 value={ this.__getPostProperty('body') }
-                required
               />
             </div>
             <div className='form-group'>
               <label>Specify post author:</label>
                 { this.__getUserRadios(Object.values(this.props.authors.authors)) }
               </div>
-            <Link to='/' className='btn btn-default'>Cancel</Link>
-            <button type='submit' className='btn btn-default'>Save</button>
+            <Link to='/' className='btn btn-default PostDetail__button'>Cancel</Link>
+            <button type='submit' className='btn btn-default PostDetail__button'>Save</button>
           </form>
         </div>
       </div>
@@ -289,6 +298,7 @@ function mapDispatchToProps(dispatch) {
     fetchActivePost: (id) => dispatch(fetchActivePost(id, dispatch)),
     fetchAuthors: () => dispatch(fetchAuthors(dispatch)),
     hideError: () => dispatch(hideError()),
+    submitForm: (validate, submit) => dispatch(submitForm(validate, submit, dispatch)),
   };
 }
 

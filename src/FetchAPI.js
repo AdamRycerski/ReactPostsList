@@ -46,6 +46,6 @@ class FetchAPI {
   }
 }
 
-const fetchApi = new FetchAPI;
+const fetchApi = new FetchAPI();
 
 export { FetchAPI, fetchApi }

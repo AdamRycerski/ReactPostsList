@@ -38,7 +38,7 @@ class Modal extends React.Component {
     return (
       <button
         key={ button.label }
-        className='btn btn-default'
+        className='btn btn-default Modal-window__button'
         onClick={ button.callback }
       >
         { button.label }
@@ -66,12 +66,16 @@ class Modal extends React.Component {
 
   render() {
     return (
-      <div className={ classNames('Modal', { displayed: this.props.isDisplayed }) }>
+      <div className={ classNames(
+          'Modal',
+          { 'Modal--displayed': this.props.isDisplayed, 'Modal--hidden': !this.props.isDisplayed }
+        ) }
+      >
         <div
-          className={ classNames('ModalOverlay') }
+          className={ classNames('Modal__overlay') }
           onClick={ e => e.preventDefault() }
         />
-        <div className={ classNames('ModalWindow modal-content') }>
+        <div className={ classNames('Modal-window modal-content') }>
           { this.__getHeader() }
           { this.__getBody() }
           { this.__getFooter() }

@@ -15,7 +15,7 @@ class Logo extends React.Component {
     let { src, width, height } = this.props;
     return (
       <div className='Logo'>
-        <img src={ src } width={ width } height={ height } alt='logo' />
+        <img className='Logo__img' src={ src } width={ width } height={ height } alt='logo' />
       </div>
     );
   }

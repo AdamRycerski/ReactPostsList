@@ -2,11 +2,10 @@
 
   height: 5em;
 
-  .Title {
-    float: left;
-    height: 5em;
-    margin : 0;
-    padding: 0;
+  &:after {
+    content: "";
+    display: block;
+    clear: both;
   }
 
   .Logo {
@@ -17,15 +16,16 @@
     padding-bottom: 0;
   }
 
-  .User {
-    float: right;
-    text-align: right;
-  }
-
 }
 
-.Header:after {
-  content: "";
-  display: block;
-  clear: both;
+.Header__user {
+  float: right;
+  text-align: right;
+}
+
+.Header__title {
+  float: left;
+  height: 5em;
+  margin : 0;
+  padding: 0;
 }

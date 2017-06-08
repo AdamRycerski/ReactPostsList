@@ -59,9 +59,9 @@ class Header extends React.Component {
   render() {
     return (
       <header className={ classNames('Header page-header') }>
-        <Logo src={ logoSourceUrl } />
-        <div className='Title'><h1>{ this.props.title }</h1></div>
-        <div className='User'>
+        <Logo src={ logoSourceUrl } className='Header__logo'/>
+        <div className='Header__title'><h1>{ this.props.title }</h1></div>
+        <div className='Header__user'>
           { this.__renderUsernameIfUserLoggedIn() }
           { this.__renderLogoutIfUserLoggedIn() }
         </div>

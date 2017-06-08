@@ -1,24 +1,19 @@
+.Post-controls {
+  margin-bottom: 0;
 
-.Post {
-
-  .Controls {
-    margin-bottom: 0;
-  }
-
-  .Controls:after {
+  &:after {
     content: "";
     display: block;
     clear: both;
   }
-
-  .Controls .btn {
-    width: 5em;
-    float: right;
-    margin-left: 0.5em;
-  }
-
 }
 
-.Post.Highlight {
+.Post-controls__button {
+  width: 5em;
+  float: right;
+  margin-left: 0.5em;
+}
+
+.Post--highlighted {
   background: rgb(225, 225, 225);
 }

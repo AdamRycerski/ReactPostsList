@@ -1,31 +1,30 @@
-.Modal {
-  display: none;
-
-  .ModalWindow {
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    padding: 1em;
-    text-align: center;
-
-    .btn {
-      margin-top: 1em;
-    }
-  }
-
-  .ModalOverlay {
-    position: fixed;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    background-color: #000;
-    opacity: 0.1;
-  }
-  
+.Modal-window {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  padding: 1em;
+  text-align: center;
 }
 
-.Modal.displayed {
+.Modal-window__button {
+  margin-top: 1em;
+}
+
+.Modal__overlay {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: #000;
+  opacity: 0.1;
+}
+
+.Modal--displayed {
   display: block;
+}
+
+.Modal--hidden {
+  display: none;
 }

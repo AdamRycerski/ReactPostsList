@@ -1,24 +1,18 @@
-.PostsIndex {
+.PostsIndex-controls {
+  margin-bottom: 1em;
 
-  .Controls {
-
-    margin-bottom: 1em;
-
-    .SearchBar {
-      float: left;
-    }
-
-    .btn {
-      float: right;
-      width: 7em;
-    }
-
-  }
-
-  .Controls:after {
+  &:after {
     content: "";
     display: block;
     clear: both;
   }
+}
 
+.PostsIndex-controls__searchbar {
+  float: left;
+}
+
+.PostsIndex-controls__button {
+  float: right;
+  width: 7em;
 }

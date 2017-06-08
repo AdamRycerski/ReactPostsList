@@ -28,7 +28,7 @@ class List extends React.Component {
 
   __getListElement(item) {
     return (
-      <li key={ item.key } className='ListItem list-group-item'>
+      <li key={ item.key } className='List__item list-group-item'>
         { item.element }
       </li>
     );

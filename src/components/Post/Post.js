@@ -35,15 +35,15 @@ class Post extends React.Component {
 
   render() {
     return (
-      <div className={ classNames('Post well', { Highlight: this.props.highlight }) }>
+      <div className={ classNames('Post well', { 'Post--highlighted': this.props.highlight }) }>
         <div>
           <h3> { this.state.title } </h3>
           <p className='text-justify'> { this.state.body } </p>
         </div>
-        <div className='Controls'>
-          <Link to={ `/posts/${this.state.id}` } className='btn btn-default'>Edit</Link>
+        <div className='Post-controls'>
+          <Link to={ `/posts/${this.state.id}` } className='btn btn-default Post-controls__button'>Edit</Link>
           <button
-            className='btn btn-default'
+            className='btn btn-default Post-controls__button'
             onClick={ e => this.__onDelete() }
           >
             Delete
