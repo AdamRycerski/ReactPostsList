@@ -8,7 +8,7 @@ class Comment extends React.Component {
   static propTypes = {
     email: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
-    body: PropTypes.string.isRequired,
+    body: PropTypes.string.isRequired
   }
 
   render() {

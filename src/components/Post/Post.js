@@ -8,14 +8,14 @@ import './Post.scss';
 class Post extends React.Component {
   static defaultProps = {
     title: '',
-    body: '',
+    body: ''
   }
 
   static propTypes = {
     onDelete: PropTypes.func,
     title: PropTypes.string,
     body: PropTypes.string,
-    id: PropTypes.any.isRequired,
+    id: PropTypes.any.isRequired
   }
 
   constructor(props) {

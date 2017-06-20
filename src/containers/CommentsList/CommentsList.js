@@ -9,7 +9,7 @@ import { postsApi } from '../../PostsAPI';
 
 class CommentsList extends React.Component {
   static defaultProps = {
-    postId: -1,
+    postId: -1
   }
 
   constructor(props) {
@@ -17,7 +17,7 @@ class CommentsList extends React.Component {
 
     this.state = {
       postId: this.props.postId,
-      comments: [],
+      comments: []
     }
   }
 
@@ -34,7 +34,7 @@ class CommentsList extends React.Component {
     return comments.map((comment) => {
       return {
         key: comment.id,
-        element: <Comment title={ comment.name } body={ comment.body } email={ comment.email} />,
+        element: <Comment title={ comment.name } body={ comment.body } email={ comment.email} />
       };
     });
   }

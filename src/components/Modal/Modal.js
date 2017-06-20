@@ -9,7 +9,7 @@ class Modal extends React.Component {
   static defaultProps = {
     isDisplayed: false,
     header: "",
-    buttons: [],
+    buttons: []
   }
 
   static propTypes = {
@@ -17,7 +17,7 @@ class Modal extends React.Component {
     header: PropTypes.string,
     buttons: PropTypes.arrayOf(PropTypes.shape({
       label: PropTypes.string.isRequired,
-      callback: PropTypes.func.isRequired,
+      callback: PropTypes.func.isRequired
     })),
   }
 
