@@ -14,7 +14,7 @@ export function submitForm(validate, submit, dispatch) {
 
   return {
     type: SUBMIT_FORM,
-    payload: {},
+    payload: { errors },
   };
 }
 

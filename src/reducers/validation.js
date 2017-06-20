@@ -7,11 +7,10 @@ const defaultState = {
 };
 
 export default function(state = defaultState, action) {
-  console.log(action);
   switch (action.type) {
     case SUBMIT_FORM:
       return {
-        errors: action.payload.erors,
+        errors: action.payload.errors,
       };
     default:
       return state;

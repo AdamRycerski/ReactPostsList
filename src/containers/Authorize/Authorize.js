@@ -15,9 +15,10 @@ export function authorize(component) {
 
     componentDidMount() {
       // Live check or redux check? Made live.
-      loginApi.checkAuthorized()
-        .then(() => this.setState({ authorized:  true }))
-        .catch(() => this.__redirectToLogin());
+      loginApi.checkAuthorized().then(
+        () => this.setState({ authorized:  true }),
+        () => this.__redirectToLogin(),
+      );
     }
 
     __redirectToLogin() {

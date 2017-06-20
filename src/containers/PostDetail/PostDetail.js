@@ -109,20 +109,7 @@ class PostDetail extends React.Component {
   __onSubmit(event) {
     event.preventDefault();
 
-    /*
-    if (this.__getValidationError()) {
-      return false;
-    }
-
-    let submit;
-    if (this.__getPostProperty("id")) {
-      submit = () => this.props.updatePost(this.__getPostData());
-    } else {
-      submit = () => this.props.addPost(this.__getPostData());
-    }
-    */
-
-    const submit = (
+    const submitCallback = (
       this.__getPostProperty('id') ?
       () => this.props.updatePost(this.__getPostData()) :
       () => this.props.addPost(this.__getPostData())
@@ -130,22 +117,12 @@ class PostDetail extends React.Component {
 
     this.props.submitForm(
       () => this.__validateInputs(),
-      submit,
-    )
+      submitCallback,
+    );
   }
 
   __returnToHomepage() {
     this.props.router.push("/");
-  }
-
-  __getValidationError() {
-    if (
-      this.__getPostProperty('title') === '' ||
-      this.__getPostProperty('body') === '' ||
-      Number(this.__getPostProperty('authorId')) === -1
-    ) {
-      return 'All fields must be filled out.';
-    }
   }
 
   __getBreadcrumbsLinks() {
