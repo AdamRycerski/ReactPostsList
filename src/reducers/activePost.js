@@ -9,7 +9,7 @@ const defaultState = {
   fetch: {
     pending: false,
     success: false,
-    failure: false,
+    failure: false
   },
 };
 
@@ -21,7 +21,7 @@ export default function(state = defaultState, action) {
         fetch: {
           pending: true,
           success: false,
-          failure: false,
+          failure: false
         }
       };
     case RECEIVE_ACTIVE_POST:
@@ -31,7 +31,7 @@ export default function(state = defaultState, action) {
         fetch: {
           pending: false,
           success: true,
-          failure: false,
+          failure: false
         }
       };
     case INVALIDATE_ACTIVE_POST:
@@ -40,7 +40,7 @@ export default function(state = defaultState, action) {
         fetch: {
           pending: false,
           success: false,
-          failure: true,
+          failure: true
         }
       };
     default:

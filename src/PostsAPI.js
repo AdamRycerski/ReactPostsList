@@ -1,4 +1,4 @@
-import { postsApiUrl } from "./config";
+import { postsApiUrl } from './config';
 
 class PostsAPI {
   constructor(url) {
@@ -11,13 +11,13 @@ class PostsAPI {
   }
 
   updatePost(id, data) {
-    let request = this.__createRequestData("PUT", this.__getUpdatePostRequestBody(data));
+    let request = this.__createRequestData('PUT', this.__getUpdatePostRequestBody(data));
     return fetch(this.__getPostUrl(id), request)
       .then((res) => { return this.__handleResponse(res); })
   }
 
   deletePost(id) {
-    let request = this.__createRequestData("DELETE");
+    let request = this.__createRequestData('DELETE');
     return fetch(this.__getPostUrl(id), request)
       .then((res) => { return this.__handleResponse(res); });
   }
@@ -33,7 +33,7 @@ class PostsAPI {
   }
 
   addPost(postData) {
-    let request = this.__createRequestData("POST", this.__getAddPostRequestBody(postData));
+    let request = this.__createRequestData('POST', this.__getAddPostRequestBody(postData));
     return fetch(this.url, request)
       .then((res) => { return this.__handleResponse(res); });
   }
@@ -52,7 +52,7 @@ class PostsAPI {
       key = encodeURIComponent(key);
       let value = encodeURIComponent(data[key]);
       return `${acc}&${key}=${value}`;
-    }, "").substr(1);
+    }, '').substr(1);
   }
 
   __getAddPostRequestBody(postData) {

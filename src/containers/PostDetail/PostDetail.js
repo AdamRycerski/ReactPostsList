@@ -24,20 +24,20 @@ class PostDetail extends React.Component {
         isDisplayed: false,
         message: '',
         header: '',
-        buttons: [],
+        buttons: []
       },
       post: {
-        id: Number(this.props.params.id),
+        id: parseInt(this.props.params.id, 10),
         title: '',
         body: '',
-        authorId: -1,
+        authorId: -1
       },
     };
   }
 
   componentDidMount() {
-    if (this.__getPostProperty("id")) {
-      this.props.fetchActivePost(this.__getPostProperty("id"));
+    if (this.__getPostProperty('id')) {
+      this.props.fetchActivePost(this.__getPostProperty('id'));
     }
   }
 
@@ -93,7 +93,7 @@ class PostDetail extends React.Component {
       return false;
     }
 
-    if (this.__getPostProperty("id")) {
+    if (this.__getPostProperty('id')) {
       this.props.updatePost(this.__getPostData());
     } else {
       this.props.addPost(this.__getPostData());
@@ -108,7 +108,7 @@ class PostDetail extends React.Component {
     if (
       this.__getPostProperty('title') === '' ||
       this.__getPostProperty('body') === '' ||
-      Number(this.__getPostProperty('authorId')) === -1
+      parseInt(this.__getPostProperty('authorId'), 10) === -1
     ) {
       return 'All fields must be filled out.';
     }
@@ -124,65 +124,41 @@ class PostDetail extends React.Component {
     ];
   }
 
-  __showModal(message, header, buttons) {
-    this.setState({
-      modal: {
-        ...this.state.modal,
-        isDisplayed: true,
-        message,
-        header,
-        buttons,
-      }
-    });
-  }
-
-  __hideModal() {
-    this.setState({
-      modal: {
-        ...this.state.modal,
-        isDisplayed: false,
-        message: '',
-        buttons: [],
-        header: '',
-      },
-    });
-  }
-
   __renderFormSection() {
-    const header = this.__getPostProperty("id") ? "Edit Post" : "Add Post";
+    const header = this.__getPostProperty('id') ? 'Edit Post' : 'Add Post';
     return (
       <div id="PostForm">
         <h3>{ header }</h3>
-        <div className='form-group'>
+        <div className="form-group">
           <form onSubmit={ e => this.__onSubmit(e) }>
-            <div className='form-group'>
+            <div className="form-group">
               <input
-                type='text'
-                name='title'
-                className='form-control'
-                placeholder='Title'
+                type="text"
+                name="title"
+                className="form-control"
+                placeholder="Title"
                 onChange={ e => this.__onInputChange(e) }
                 value={ this.__getPostProperty('title') }
                 required
               />
             </div>
-            <div className='form-group'>
+            <div className="form-group">
               <textarea
-                name='body'
-                className='form-control'
-                placeholder='Body'
-                rows='5'
+                name="body"
+                className="form-control"
+                placeholder="Body"
+                rows="5"
                 onChange={ e => this.__onInputChange(e) }
                 value={ this.__getPostProperty('body') }
                 required
               />
             </div>
-            <div className='form-group'>
+            <div className="form-group">
               <label>Specify post author:</label>
                 { this.__getUserRadios(users) }
               </div>
-            <Link to='/' className='btn btn-default'>Cancel</Link>
-            <button type='submit' className='btn btn-default'>Save</button>
+            <Link to="/" className="btn btn-default">Cancel</Link>
+            <button type="submit" className="btn btn-default">Save</button>
           </form>
         </div>
       </div>
@@ -192,14 +168,14 @@ class PostDetail extends React.Component {
   __getUserRadios(users) {
     const options = users.map((user) => {
       return (
-        <div className='radio' key={ user.id } >
+        <div className="radio" key={ user.id } >
           <label>
             <input
-              type='radio'
-              value={ Number(user.id) }
-              name='authorId'
+              type="radio"
+              value={ parseInt(user.id, 10) }
+              name="authorId"
               onChange={ e => this.__onInputChange(e) }
-              checked={ Number(user.id) === Number(this.__getPostProperty("authorId")) }
+              checked={ parseInt(user.id, 10) === parseInt(this.__getPostProperty('authorId'), 10) }
             />
             { user.name }
           </label>
@@ -210,7 +186,7 @@ class PostDetail extends React.Component {
   }
 
   __renderCommentsSection() {
-    if (!this.__getPostProperty("id")) {
+    if (!this.__getPostProperty('id')) {
       return;
     }
 
@@ -218,7 +194,7 @@ class PostDetail extends React.Component {
       <div>
         <h3>Comments</h3>
         <div className="small">
-          <CommentsList postId={ this.__getPostProperty("id") } />
+          <CommentsList postId={ this.__getPostProperty('id') } />
         </div>
       </div>
     );
@@ -233,7 +209,7 @@ class PostDetail extends React.Component {
       <Modal
         isDisplayed={ this.props.displayedError.isDisplayed }
         header={ this.props.displayedError.title }
-        buttons={ [ { label: "ok", callback: e => this.props.hideError() } ] }
+        buttons={ [ { label: 'ok', callback: e => this.props.hideError() } ] }
       >
         { this.props.displayedError.message }
       </Modal>
@@ -242,7 +218,7 @@ class PostDetail extends React.Component {
 
   render() {
     return (
-      <div className='PostDetail'>
+      <div className="PostDetail">
         { this.__renderBreadcrumbs() }
         { this.__renderFormSection() }
         { this.__renderCommentsSection() }
@@ -265,7 +241,7 @@ function mapDispatchToProps(dispatch) {
     addPost: (post) => dispatch(addPost(post, dispatch)),
     updatePost: (post) => dispatch(updatePost(post, dispatch)),
     fetchActivePost: (id) => dispatch(fetchActivePost(id, dispatch)),
-    hideError: () => dispatch(hideError()),
+    hideError: () => dispatch(hideError())
   };
 }
 

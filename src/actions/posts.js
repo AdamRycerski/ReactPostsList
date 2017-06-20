@@ -1,5 +1,6 @@
 import { postsApi } from '../PostsAPI';
 import { displayError } from './displayedError';
+import { errorMessages as messages } from '../config';
 
 export const FETCH_POSTS = 'FETCH_POST';
 export function fetchPosts(dispatch) {
@@ -7,12 +8,12 @@ export function fetchPosts(dispatch) {
     .then(posts => dispatch(receivePosts(posts)))
     .catch(status => {
         dispatch(invalidatePosts(status));
-        dispatch(displayError({ message: 'Encountered error fetching post' }));
+        dispatch(displayError({ message: messages.fetchPost }));
       });
 
   return {
     type: FETCH_POSTS,
-    payload: {},
+    payload: {}
   };
 }
 
@@ -20,7 +21,7 @@ export const INVALIDATE_POSTS = 'INVALIDATE_POSTS';
 export function invalidatePosts() {
   return {
     type: INVALIDATE_POSTS,
-    payload: {},
+    payload: {}
   };
 }
 
@@ -30,7 +31,7 @@ export function receivePosts(posts) {
     type: RECEIVE_POSTS,
     payload: {
       posts
-    },
+    }
   };
 }
 
@@ -40,7 +41,7 @@ export function addPost(post, dispatch) {
     .then(res => dispatch(receivePost({ ...post, ...res })))
     .catch(status => {
       dispatch(invalidatePost(status))
-      dispatch(displayError({ message: 'Encountered error adding post.' }));
+      dispatch(displayError({ message: messages.addPost }));
     });
 
   return {
@@ -55,7 +56,7 @@ export function updatePost(post, dispatch) {
     .then(res => dispatch(receivePost({ ...post, ...res })))
     .catch(status => {
       dispatch(invalidatePost(status));
-      dispatch(displayError({ message: 'Encountered error updating post.' }))
+      dispatch(displayError({ message: messages.updatePost }))
     });
 
   return {
@@ -69,7 +70,7 @@ export function receivePost(post) {
   return {
     type: RECEIVE_POST,
     payload: {
-      post: post,
+      post: post
     },
   };
 }
@@ -78,7 +79,7 @@ export const INVALIDATE_POST = 'INVALIDATE_POST';
 export function invalidatePost() {
   return {
     type: INVALIDATE_POST,
-    payload: {},
+    payload: {}
   };
 }
 
@@ -88,12 +89,12 @@ export function requestPostDelete(id, dispatch) {
     .then(() => dispatch(deletePost(id)))
     .catch(() => {
       dispatch(invalidatePostDelete());
-      dispatch(displayError({ message: 'Encountered error deleting post.' }));
+      dispatch(displayError({ message: messages.deletePost }));
     });
 
   return {
     type: REQUEST_POST_DELETE,
-    payload: {},
+    payload: {}
   }
 }
 
@@ -103,7 +104,7 @@ export function deletePost(id) {
     type: DELETE_POST,
     payload: {
       id
-    },
+    }
   };
 }
 
@@ -111,6 +112,6 @@ export const INVALIDATE_POST_DELETE = 'INVALIDATE_POST_DELETE';
 export function invalidatePostDelete() {
   return {
     type: INVALIDATE_POST_DELETE,
-    payload: {},
+    payload: {}
   };
 }

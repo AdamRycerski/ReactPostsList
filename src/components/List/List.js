@@ -6,13 +6,13 @@ import './List.scss';
 
 class List extends React.Component {
   static defaultProps = {
-    items: [],
+    items: []
   }
 
   static propTypes = {
     items: PropTypes.arrayOf(PropTypes.shape({
       key: PropTypes.any.isRequired,
-      element: PropTypes.element.isRequired,
+      element: PropTypes.element.isRequired
     })),
   }
 

@@ -15,7 +15,7 @@ class PostsList extends React.Component {
   static propTypes = {
     filter: PropTypes.shape({
       phrase: PropTypes.string,
-      maxLength: PropTypes.number,
+      maxLength: PropTypes.number
     }),
   };
 
@@ -23,7 +23,7 @@ class PostsList extends React.Component {
     filter: {
       phrase: '',
       maxLength: -1,
-      isDeleteConfirmationDisplayed: true,
+      isDeleteConfirmationDisplayed: true
     },
   };
 
@@ -34,9 +34,9 @@ class PostsList extends React.Component {
       posts: [],
       modal: {
         isDisplayed: false,
-        message: "",
-        header: "",
-        buttons: [],
+        message: '',
+        header: '',
+        buttons: []
       },
     };
   }
@@ -92,7 +92,7 @@ class PostsList extends React.Component {
         isDisplayed: true,
         message,
         buttons,
-        header,
+        header
       },
     });
   }
@@ -102,9 +102,9 @@ class PostsList extends React.Component {
       modal: {
         ...this.state.modal,
         isDisplayed: false,
-        message: "",
+        message: '',
         buttons: [],
-        header: "",
+        header: ''
       },
     });
   }
@@ -115,16 +115,16 @@ class PostsList extends React.Component {
 
   __showPostDeleteConfirmModal(postId) {
     this.__showModal(
-      "Are you sure you want to delete this post?",
-      "Confirm",
-      this.__getPostDeleteConfirmModalButtons(postId),
+      'Are you sure you want to delete this post?',
+      'Confirm',
+      this.__getPostDeleteConfirmModalButtons(postId)
     );
   }
 
   __getPostDeleteConfirmModalButtons(postId) {
     return [
       { label: 'Cancel', callback: () => this.__hideModal() },
-      { label: 'Confirm', callback: () => this.__onDeleteModalAccept(postId) },
+      { label: 'Confirm', callback: () => this.__onDeleteModalAccept(postId) }
     ];
   }
 
@@ -152,7 +152,7 @@ class PostsList extends React.Component {
       <Modal
         isDisplayed={ this.props.displayedError.isDisplayed }
         header={ this.props.displayedError.title }
-        buttons={ [ { label: "ok", callback: e => this.props.hideError() } ] }
+        buttons={ [ { label: 'ok', callback: e => this.props.hideError() } ] }
       >
         { this.props.displayedError.message }
       </Modal>
@@ -179,7 +179,7 @@ class PostsList extends React.Component {
 function mapStateToProps(state) {
   return {
     posts: state.posts,
-    displayedError: state.displayedError,
+    displayedError: state.displayedError
   };
 }
 
@@ -187,7 +187,7 @@ function mapDispatchToProps(dispatch) {
   return {
     fetchPosts: () => dispatch(fetchPosts(dispatch)),
     requestPostDelete: (id) => dispatch(requestPostDelete(id, dispatch)),
-    hideError: () => dispatch(hideError()),
+    hideError: () => dispatch(hideError())
   };
 }
 

@@ -10,7 +10,7 @@ import { logoSourceUrl } from '../../config';
 
 class Header extends React.Component {
   static defaultProps = {
-    title: 'Header',
+    title: 'Header'
   }
 
   static propTypes = {

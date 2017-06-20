@@ -17,17 +17,17 @@ const defaultState = {
   fetch: {
     pending: false,
     success: false,
-    failure: false,
+    failure: false
   },
   deletion: {
     pending: false,
     success: false,
-    failure: false,
+    failure: false
   },
   update: {
     pending: false,
     success: false,
-    failure: false,
+    failure: false
   },
 };
 
@@ -39,7 +39,7 @@ export default function postsReducer(state = defaultState, action) {
         fetch: {
           pending: true,
           success: false,
-          failure: false,
+          failure: false
         }
       };
     case INVALIDATE_POSTS:
@@ -48,7 +48,7 @@ export default function postsReducer(state = defaultState, action) {
         fetch: {
           pending: false,
           success: false,
-          failure: true,
+          failure: true
         }
       };
     case RECEIVE_POSTS:
@@ -58,7 +58,7 @@ export default function postsReducer(state = defaultState, action) {
         fetch: {
           pending: false,
           success: true,
-          failure: false,
+          failure: false
         }
       };
     case ADD_POST:
@@ -67,7 +67,7 @@ export default function postsReducer(state = defaultState, action) {
         update: {
           pending: true,
           success: false,
-          failure: false,
+          failure: false
         }
       };
     case UPDATE_POST:
@@ -76,7 +76,7 @@ export default function postsReducer(state = defaultState, action) {
         update: {
           pending: true,
           success: false,
-          failure: false,
+          failure: false
         }
       };
     case INVALIDATE_POST:
@@ -85,7 +85,7 @@ export default function postsReducer(state = defaultState, action) {
         update: {
           pending: false,
           success: false,
-          failure: true,
+          failure: true
         }
       };
     case RECEIVE_POST:
@@ -95,7 +95,7 @@ export default function postsReducer(state = defaultState, action) {
         update: {
           pending: false,
           success: true,
-          failure: false,
+          failure: false
         }
       };
     case REQUEST_POST_DELETE:
@@ -104,7 +104,7 @@ export default function postsReducer(state = defaultState, action) {
         deletion: {
           pending: true,
           success: false,
-          failure: false,
+          failure: false
         }
       };
     case INVALIDATE_POST_DELETE:
@@ -113,7 +113,7 @@ export default function postsReducer(state = defaultState, action) {
         deletion: {
           pending: false,
           success: false,
-          failure: true,
+          failure: true
         }
       };
     case DELETE_POST:
@@ -123,7 +123,7 @@ export default function postsReducer(state = defaultState, action) {
         deletion: {
           pending: false,
           success: true,
-          failure: false,
+          failure: false
         }
       };
     default: return state;

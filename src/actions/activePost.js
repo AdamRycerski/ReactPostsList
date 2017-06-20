@@ -8,7 +8,7 @@ export function fetchActivePost(id, dispatch) {
 
   return {
     type: FETCH_ACTIVE_POST,
-    payload: {},
+    payload: {}
   };
 }
 
@@ -19,7 +19,7 @@ export function receiveActivePost(post) {
     payload: {
       title: post.title,
       body: post.body,
-      authorId: post.userId,
+      authorId: post.userId
     },
   };
 }
@@ -27,6 +27,6 @@ export function receiveActivePost(post) {
 export const INVALIDATE_ACTIVE_POST = 'INVALIDATE_ACTIVE_POST';
 export function invalidateActivePost() {
   return {
-    type: INVALIDATE_ACTIVE_POST,
+    type: INVALIDATE_ACTIVE_POST
   };
 }

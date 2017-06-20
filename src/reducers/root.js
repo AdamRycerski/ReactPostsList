@@ -7,5 +7,5 @@ import displayedErrorReducer from './displayedError';
 export default combineReducers({
   posts: postsReducer,
   activePost: activePostReducer,
-  displayedError: displayedErrorReducer,
+  displayedError: displayedErrorReducer
 });

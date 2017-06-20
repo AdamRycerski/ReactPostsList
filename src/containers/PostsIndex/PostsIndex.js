@@ -29,7 +29,7 @@ class PostsIndex extends React.Component {
 
   __displayDeletePostConfirmation() {
     this.setState({
-      isDeleteConfirmationDisplayed: true,
+      isDeleteConfirmationDisplayed: true
     });
   }
 

@@ -4,8 +4,8 @@ export function displayError({ title = 'Error', message = ''}) {
     type: DISPLAY_ERROR,
     payload: {
       message,
-      title,
-    },
+      title
+    }
   };
 }
 
@@ -13,6 +13,6 @@ export const HIDE_ERROR = 'HIDE_ERROR';
 export function hideError() {
   return {
     type: HIDE_ERROR,
-    payload: {},
+    payload: {}
   };
 }

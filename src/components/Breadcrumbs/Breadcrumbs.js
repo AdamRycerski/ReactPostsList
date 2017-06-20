@@ -7,13 +7,13 @@ import './Breadcrumbs.scss';
 
 class Breadcrumbs extends React.Component {
   static defaultProps = {
-    links: [],
+    links: []
   }
 
   static propTypes = {
     links: PropTypes.arrayOf(PropTypes.shape({
       path: PropTypes.string,
-      name: PropTypes.string,
+      name: PropTypes.string
     })),
   }
 
